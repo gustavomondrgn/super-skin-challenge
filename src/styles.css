@@ -255,7 +255,7 @@ abbr[title] {
   display: flex;
   gap: 32px;
   margin-left: auto;
-  margin-right: 55px;
+  margin-right: 0;
 }
 .main-nav a {
   font-size: 11px;

@@ -12,6 +12,8 @@ Site do evento entre **isinha, alice, kurtz e musashi**, com classificação, co
 
 O regulamento completo está em [contexto_brutal_super_skin_challenge_v1_1.md](./contexto_brutal_super_skin_challenge_v1_1.md). A conversa posterior definiu os quatro participantes acima e excluiu os rounds extras da soma da fase regular.
 
+O painel é acessado diretamente por `/admin`; a página pública não mostra links de administração. Em cada confronto, **Sortear mapa** escolhe um dos cinco mapas de duelo (A, B, C, D ou E) para toda a série e salva o resultado. Mapas podem se repetir entre sorteios. **Sortear novamente** pede confirmação antes de substituir o mapa. Os dados antigos continuam compatíveis; não é necessário executar um novo SQL.
+
 São **8 confrontos no evento inteiro**, sem contar desempates: 6 na primeira fase, a final e o desafio. Isso representa de **17 a 26 partidas**, então o formato não garante duração inferior a uma hora. O tempo depende da duração de cada partida e dos intervalos.
 
 ## 1. Preparar o Supabase

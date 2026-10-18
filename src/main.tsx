@@ -9,6 +9,7 @@ import "@fontsource/dm-sans/latin-600.css";
 import "@fontsource/dm-sans/latin-700.css";
 import App from "./App";
 import "./styles.css";
+import "./map-draw.css";
 
 class ErrorBoundary extends React.Component<
   React.PropsWithChildren,

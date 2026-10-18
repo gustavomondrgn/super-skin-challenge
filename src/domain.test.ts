@@ -1,9 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  DUEL_MAPS,
   DownstreamResultsError,
   addTiebreak,
   applyGameResult,
   createInitialState,
+  drawSeriesMap,
   getProgress,
   getSeriesResult,
   getStandings,
@@ -635,5 +637,157 @@ describe("untrusted persisted state", () => {
     expect(parsed.participants[0]!.avatar).toBe(
       "https://example.com/portrait.png",
     );
+  });
+});
+
+describe("duel map draws", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  function mockDraws(...samples: number[]) {
+    const getRandomValues = vi.fn((array: Uint32Array) => {
+      const sample = samples.shift();
+      if (sample === undefined) throw new Error("Unexpected random draw.");
+      array[0] = sample;
+      return array;
+    });
+    vi.stubGlobal("crypto", { getRandomValues });
+    return getRandomValues;
+  }
+
+  it("starts every phase and newly created MD1 without a map", () => {
+    expect(createInitialState().series.every((series) => series.map === null))
+      .toBe(true);
+    const state = addTiebreak(
+      league(["a", "a", "a", "a", "b", "a"]),
+      "isinha",
+      "alice",
+    );
+    expect(state.series.find((series) => series.phase === "tiebreak")!.map)
+      .toBeNull();
+  });
+
+  it("can draw all five maps and permits independent repetitions", () => {
+    mockDraws(0, 1, 2, 3, 4, 0);
+    let state = createInitialState();
+    for (let index = 0; index < 6; index += 1) {
+      state = drawSeriesMap(state, `league-${index + 1}`);
+    }
+    expect(state.series.slice(0, 5).map((series) => series.map)).toEqual(
+      DUEL_MAPS,
+    );
+    expect(state.series[5]!.map).toBe("A");
+  });
+
+  it("rejects the biased remainder before selecting a uniformly distributed map", () => {
+    const random = mockDraws(2 ** 32 - 1, 2 ** 32 - 2);
+    const state = drawSeriesMap(createInitialState(), "league-1");
+    expect(random).toHaveBeenCalledTimes(2);
+    expect(state.series[0]!.map).toBe("E");
+  });
+
+  it("changes only the chosen map, preserves scores and active match, and allows a redraw", () => {
+    mockDraws(1, 4);
+    const initial = applyGameResult(createInitialState(), "league-1", 0, {
+      scoreA: 2,
+      scoreB: 7,
+      reason: "knife",
+      winnerId: "isinha",
+    });
+    const before = JSON.stringify(initial);
+    const standings = getStandings(initial);
+    const firstDraw = drawSeriesMap(initial, "league-1");
+    const redraw = drawSeriesMap(firstDraw, "league-1");
+    expect(firstDraw.series[0]!.map).toBe("B");
+    expect(redraw.series[0]!.map).toBe("E");
+    expect(redraw).toEqual({
+      ...initial,
+      series: initial.series.map((series) =>
+        series.id === "league-1" ? { ...series, map: "E" } : series,
+      ),
+    });
+    expect(getStandings(redraw)).toEqual(standings);
+    expect(JSON.stringify(initial)).toBe(before);
+    expect(redraw.series[0]!.games[0]).not.toBe(initial.series[0]!.games[0]);
+    expect(redraw.series[0]!.games[0]!.scoreAtTermination).not.toBe(
+      initial.series[0]!.games[0]!.scoreAtTermination,
+    );
+  });
+
+  it("retains maps drawn for future final and boss slots as players qualify and games are played", () => {
+    mockDraws(2, 3);
+    let state = drawSeriesMap(createInitialState(), "final");
+    state = drawSeriesMap(state, "boss");
+    for (let index = 1; index <= 6; index += 1) {
+      state = sweep(state, `league-${index}`, "a");
+    }
+    expect(state.series.find((series) => series.id === "final")).toMatchObject({
+      map: "C",
+      playerA: "isinha",
+      playerB: "alice",
+    });
+    state = sweep(state, "final", "a");
+    expect(state.series.find((series) => series.id === "boss")).toMatchObject({
+      map: "D",
+      playerA: "isinha",
+      playerB: "zacarias",
+    });
+    state = sweep(state, "boss", "b");
+    const corrected = removeGameResult(state, "league-1", 0, true);
+    expect(corrected.series.find((series) => series.id === "final"))
+      .toMatchObject({ map: "C", playerA: null, playerB: null, games: [] });
+    expect(corrected.series.find((series) => series.id === "boss"))
+      .toMatchObject({ map: "D", playerA: null, playerB: null, games: [] });
+  });
+
+  it("draws and persists the one map used for an MD1", () => {
+    mockDraws(4);
+    let state = addTiebreak(
+      league(["a", "a", "a", "a", "b", "a"]),
+      "isinha",
+      "alice",
+    );
+    const id = state.series.find((series) => series.phase === "tiebreak")!.id;
+    state = sweep(drawSeriesMap(state, id), id, "a");
+    expect(state.series.find((series) => series.id === id))
+      .toMatchObject({ map: "E", bestOf: 1 });
+    expect(validateState(JSON.parse(JSON.stringify(state)))).toEqual(state);
+  });
+
+  it("rejects an unknown confrontation without consuming randomness or modifying state", () => {
+    const random = mockDraws(0);
+    const state = createInitialState();
+    const before = JSON.stringify(state);
+    expect(() => drawSeriesMap(state, "missing")).toThrow(/não encontrado/);
+    expect(random).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
+  it("loads legacy snapshots without maps and preserves every recorded result", () => {
+    const state = sweep(sweep(league(), "final", "a"), "boss", "b");
+    const legacy = {
+      ...state,
+      series: state.series.map(({ map: _map, ...series }) => series),
+    };
+    const restored = validateState(JSON.parse(JSON.stringify(legacy)));
+    expect(restored).toEqual(state);
+    expect(getProgress(restored).phase).toBe("finished");
+    expect(restored.series.every((series) => series.map === null)).toBe(true);
+  });
+
+  it("accepts persisted A–E or null and rejects every other map value", () => {
+    const state = createInitialState();
+    state.series.forEach((series, index) => {
+      series.map = DUEL_MAPS[index % DUEL_MAPS.length]!;
+    });
+    expect(validateState(JSON.parse(JSON.stringify(state)))).toEqual(state);
+    for (const value of [undefined, "", "a", "F", " A", 0, false, [], {}]) {
+      const invalid = {
+        ...state,
+        series: state.series.map((series, index) =>
+          index === 0 ? { ...series, map: value } : series,
+        ),
+      };
+      expect(() => validateState(invalid)).toThrow(/Mapa de duelo inválido/);
+    }
   });
 });

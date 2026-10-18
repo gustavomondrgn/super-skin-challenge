@@ -1,5 +1,8 @@
 export type GameReason = "normal" | "knife" | "violation";
 
+export const DUEL_MAPS = ["A", "B", "C", "D", "E"] as const;
+export type DuelMap = (typeof DUEL_MAPS)[number];
+
 export interface Participant {
   id: string;
   name: string;
@@ -29,6 +32,7 @@ export interface Series {
   playerA: string | null;
   playerB: string | null;
   bestOf: 1 | 3 | 5;
+  map: DuelMap | null;
   games: Game[];
 }
 
@@ -105,6 +109,7 @@ export function createInitialState(): TournamentState {
         playerA,
         playerB,
         bestOf: 3,
+        map: null,
         games: [],
       })),
       {
@@ -114,6 +119,7 @@ export function createInitialState(): TournamentState {
         playerA: null,
         playerB: null,
         bestOf: 5,
+        map: null,
         games: [],
       },
       {
@@ -123,6 +129,7 @@ export function createInitialState(): TournamentState {
         playerA: null,
         playerB: null,
         bestOf: 3,
+        map: null,
         games: [],
       },
     ],
@@ -552,6 +559,7 @@ export function addTiebreak(
     playerA,
     playerB,
     bestOf: 1,
+    map: null,
     games: [],
   };
   next.series.splice(
@@ -575,6 +583,24 @@ export function setActiveSeries(
       throw new Error("Este confronto já foi decidido.");
   }
   return { ...copyState(state), activeSeriesId: id };
+}
+
+/** Draw one independent map for the whole confrontation, including future phases. */
+export function drawSeriesMap(
+  state: TournamentState,
+  seriesId: string,
+): TournamentState {
+  const next = copyState(state);
+  const series = getRequiredSeries(next, seriesId);
+  const sample = new Uint32Array(1);
+  const range = 2 ** 32;
+  // Reject the incomplete final bucket so every map has exactly the same chance.
+  const limit = range - (range % DUEL_MAPS.length);
+  do {
+    crypto.getRandomValues(sample);
+  } while (sample[0]! >= limit);
+  series.map = DUEL_MAPS[sample[0]! % DUEL_MAPS.length]!;
+  return next;
 }
 
 function object(value: unknown): Record<string, unknown> {
@@ -666,6 +692,11 @@ export function validateState(value: unknown): TournamentState {
       (item.playerA !== null && item.playerA === item.playerB)
     )
       throw new Error("Participantes do confronto inválidos.");
+    const map = Object.prototype.hasOwnProperty.call(item, "map")
+      ? item.map
+      : null;
+    if (map !== null && !DUEL_MAPS.includes(map as DuelMap))
+      throw new Error("Mapa de duelo inválido.");
     const parsed: Series = {
       id: item.id,
       phase: item.phase as Series["phase"],
@@ -673,6 +704,7 @@ export function validateState(value: unknown): TournamentState {
       playerA: item.playerA as string | null,
       playerB: item.playerB as string | null,
       bestOf: item.bestOf as Series["bestOf"],
+      map: map as DuelMap | null,
       games: [],
     };
     if (item.games.length > parsed.bestOf)

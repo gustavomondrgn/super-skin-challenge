@@ -73,6 +73,11 @@ export function Icon({ name, size = 20 }: { name: string; size?: number }) {
         <path d="M8 3v6h8V3M8 21v-8h8v8" />
       </>
     ),
+    shuffle: (
+      <>
+        <path d="m16 3 4 4-4 4M4 7h3c4 0 6 10 10 10h3m-4-4 4 4-4 4M4 17h3c1.5 0 3-1.5 4-3m2-4c1-2 2-3 4-3h3" />
+      </>
+    ),
   };
   return (
     <svg
@@ -271,6 +276,9 @@ function SeriesCard({
         <div className="series-card-top">
           <span className="series-number">
             {title} <span>MD{series.bestOf}</span>
+            {series.map && (
+              <span className="series-map">Mapa {series.map}</span>
+            )}
           </span>
           <span
             className={`series-state${active ? " series-state--active" : ""}`}
@@ -418,10 +426,6 @@ export default function PublicPage({
             <a href="#confrontos">Confrontos</a>
             <a href="#fases">As fases</a>
           </nav>
-          <a href="/admin" className="admin-link">
-            <Icon name="lock" size={15} />
-            <span>Admin</span>
-          </a>
         </div>
       </header>
 
@@ -561,6 +565,12 @@ export default function PublicPage({
                         ? "FASE 03"
                         : "DESEMPATE"}{" "}
                   <span>/</span> MD{next.bestOf}
+                  {next.map && (
+                    <>
+                      {" "}
+                      <span>/</span> MAPA {next.map}
+                    </>
+                  )}
                 </span>
               </div>
               <div className="spotlight-match">
@@ -972,9 +982,6 @@ export default function PublicPage({
           <span>
             Evento independente entre amigos. Sem afiliação à Riot Games.
           </span>
-          <a href="/admin">
-            Administração <Icon name="arrow" size={13} />
-          </a>
         </div>
       </footer>
     </div>

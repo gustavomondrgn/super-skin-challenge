@@ -3,6 +3,8 @@ import type { User } from "@supabase/supabase-js";
 import {
   addTiebreak,
   applyGameResult,
+  drawSeriesMap,
+  DUEL_MAPS,
   DownstreamResultsError,
   getProgress,
   getSeriesResult,
@@ -258,6 +260,126 @@ function ConfirmReset({
   );
 }
 
+function ConfirmMapDraw({
+  map,
+  saving,
+  onConfirm,
+  onCancel,
+}: {
+  map: string;
+  saving: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    dialog.current?.showModal();
+    return () => dialog.current?.close();
+  }, []);
+  return (
+    <dialog
+      ref={dialog}
+      className="confirm-dialog"
+      aria-labelledby="map-confirm-title"
+      onCancel={(event) => {
+        event.preventDefault();
+        if (!saving) onCancel();
+      }}
+    >
+      <span className="eyebrow">SORTEIO DE MAPA</span>
+      <h2 id="map-confirm-title">Sortear novamente?</h2>
+      <p>
+        O mapa {map} deste confronto será substituído pelo resultado do novo
+        sorteio. Os cinco mapas participam novamente.
+      </p>
+      <div className="dialog-actions">
+        <button
+          className="button secondary"
+          disabled={saving}
+          onClick={onCancel}
+        >
+          Manter mapa {map}
+        </button>
+        <button
+          className="button primary"
+          disabled={saving}
+          onClick={onConfirm}
+        >
+          {saving ? "Sorteando…" : "Sortear novamente"}
+        </button>
+      </div>
+    </dialog>
+  );
+}
+
+function MapDraw({
+  series,
+  saving,
+  drawing,
+  onDraw,
+}: {
+  series: Series;
+  saving: boolean;
+  drawing: boolean;
+  onDraw: () => void;
+}) {
+  return (
+    <section
+      className={`map-draw${drawing ? " is-drawing" : ""}`}
+      aria-labelledby="map-draw-title"
+    >
+      <div className="map-draw-heading">
+        <div>
+          <span className="eyebrow">MODO DUELO</span>
+          <h3 id="map-draw-title">Mapa do confronto</h3>
+        </div>
+        <span className="map-draw-count">1 DE 5</span>
+      </div>
+      <div
+        className="map-draw-pool"
+        aria-label="Mapas disponíveis para o sorteio"
+      >
+        {DUEL_MAPS.map((map) => (
+          <span
+            key={map}
+            className={`map-draw-tile${series.map === map ? " is-selected" : ""}`}
+          >
+            <span>MAPA</span>
+            <strong>{map}</strong>
+            {series.map === map && <Icon name="check" size={14} />}
+          </span>
+        ))}
+      </div>
+      <div className="map-draw-actions">
+        <p aria-live="polite">
+          {drawing ? (
+            "Sorteando e salvando o mapa…"
+          ) : series.map ? (
+            <>
+              <strong>Mapa {series.map}</strong> definido para toda a série.
+            </>
+          ) : (
+            "Sorteie um mapa para todas as partidas desta série."
+          )}
+        </p>
+        <button
+          className="button secondary"
+          type="button"
+          disabled={saving}
+          onClick={onDraw}
+        >
+          <Icon name="shuffle" size={18} />
+          {drawing
+            ? "Sorteando…"
+            : series.map
+              ? "Sortear novamente"
+              : "Sortear mapa"}
+        </button>
+      </div>
+    </section>
+  );
+}
+
 function GameForm({
   state,
   series,
@@ -435,6 +557,8 @@ export default function AdminPage({
   } | null>(null);
   const [tieA, setTieA] = useState("");
   const [tieB, setTieB] = useState("");
+  const [pendingMapId, setPendingMapId] = useState<string | null>(null);
+  const [drawingMapId, setDrawingMapId] = useState<string | null>(null);
   const progress = getProgress(state);
   const standings = getStandings(state);
   const selected =
@@ -504,6 +628,33 @@ export default function AdminPage({
       setSelectedId(id);
       setTieA("");
       setTieB("");
+    }
+  }
+  async function sortMap(seriesId: string) {
+    setNotice(null);
+    setDrawingMapId(seriesId);
+    try {
+      let drawnMap: string | null = null;
+      await save((current) => {
+        const next = drawSeriesMap(current, seriesId);
+        drawnMap = next.series.find((series) => series.id === seriesId)!.map;
+        return next;
+      });
+      setNotice({
+        text: `Mapa ${drawnMap} sorteado e salvo para este confronto.`,
+        kind: "success",
+      });
+    } catch (error) {
+      setNotice({
+        text:
+          error instanceof Error
+            ? error.message
+            : "Não foi possível salvar o sorteio. Tente novamente.",
+        kind: "error",
+      });
+    } finally {
+      setDrawingMapId(null);
+      setPendingMapId(null);
     }
   }
   function select(id: string) {
@@ -702,6 +853,15 @@ export default function AdminPage({
                   <strong>{playerB?.name ?? "A definir"}</strong>
                 </div>
               </div>
+              <MapDraw
+                series={selected}
+                saving={saving}
+                drawing={drawingMapId === selected.id}
+                onDraw={() => {
+                  if (selected.map) setPendingMapId(selected.id);
+                  else void sortMap(selected.id);
+                }}
+              />
               {!selected.playerA || !selected.playerB ? (
                 <div className="empty-state">
                   <Icon name="lock" />
@@ -958,6 +1118,17 @@ export default function AdminPage({
           saving={saving}
           onCancel={() => setPendingReset(null)}
           onConfirm={() => void run(pendingReset.change, true)}
+        />
+      )}
+      {pendingMapId && (
+        <ConfirmMapDraw
+          map={
+            state.series.find((series) => series.id === pendingMapId)?.map ??
+            "atual"
+          }
+          saving={saving}
+          onCancel={() => setPendingMapId(null)}
+          onConfirm={() => void sortMap(pendingMapId)}
         />
       )}
     </AdminFrame>

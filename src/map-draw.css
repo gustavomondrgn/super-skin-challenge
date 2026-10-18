@@ -1,0 +1,129 @@
+.map-draw {
+  margin: 0 0 28px;
+  padding: 23px;
+  border: 1px solid var(--border);
+  background: #10141b;
+}
+.map-draw-heading,
+.map-draw-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.map-draw-heading .eyebrow {
+  color: var(--gold);
+  font-size: 8px;
+}
+.map-draw-heading h3 {
+  margin-top: 5px;
+  font: 600 27px/1 var(--heading);
+}
+.map-draw-count {
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 1.3px;
+}
+.map-draw-pool {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin: 22px 0;
+}
+.map-draw-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 15px 8px 13px;
+  background: #181d25;
+  border: 1px solid #303845;
+  color: #8996a9;
+}
+.map-draw-tile > span {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+}
+.map-draw-tile > strong {
+  font: 600 42px/1 var(--heading);
+}
+.map-draw-tile > svg {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+}
+.map-draw-tile.is-selected {
+  color: #eed6a5;
+  border-color: var(--gold);
+  background: #c7ad7614;
+}
+.map-draw-actions > p {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.map-draw-actions > p > strong {
+  color: #eed6a5;
+}
+.map-draw-actions .button {
+  flex-shrink: 0;
+  font-size: 11px;
+}
+.is-drawing .map-draw-pool {
+  opacity: 0.55;
+}
+.series-number .series-map {
+  color: #dfc797;
+  margin-left: 8px;
+  border-left: 1px solid #c7ad7650;
+  padding-left: 8px;
+  font-size: 9px;
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .map-draw {
+    padding: 17px 14px;
+    margin-bottom: 23px;
+  }
+  .map-draw-heading h3 {
+    font-size: 25px;
+  }
+  .map-draw-pool {
+    gap: 6px;
+    margin: 19px 0;
+  }
+  .map-draw-tile {
+    padding: 16px 3px 12px;
+  }
+  .map-draw-tile > strong {
+    font-size: 35px;
+  }
+  .map-draw-tile > span {
+    font-size: 7px;
+    letter-spacing: 1px;
+  }
+  .map-draw-tile > svg {
+    width: 11px;
+    height: 11px;
+    top: 4px;
+    right: 4px;
+  }
+  .map-draw-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+  .map-draw-actions > p {
+    font-size: 12px;
+  }
+  .map-draw-actions .button {
+    width: 100%;
+  }
+  .series-number .series-map {
+    font-size: 8px;
+    padding-left: 5px;
+    margin-left: 5px;
+  }
+}
