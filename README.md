@@ -14,6 +14,14 @@ O regulamento completo está em [contexto_brutal_super_skin_challenge_v1_1.md](.
 
 O painel é acessado diretamente por `/admin`; a página pública não mostra links de administração. Em cada confronto, **Sortear mapa** escolhe um dos cinco mapas de duelo (A, B, C, D ou E) para toda a série e salva o resultado. Mapas podem se repetir entre sorteios. **Sortear novamente** pede confirmação antes de substituir o mapa. Os dados antigos continuam compatíveis; não é necessário executar um novo SQL.
 
+A página pública e o painel se adaptam ao celular. No painel mobile, o seletor **Confronto** permite navegar pela sequência sem percorrer uma lista lateral; placares, sorteio e correções continuam disponíveis.
+
+Ao concluir os seis confrontos e resolver os empates em MD1, o site preenche automaticamente a Grande Final com os dois primeiros colocados. A vitória na MD5 define o campeão e libera o confronto contra Zacarias. **Próximo confronto** abre a próxima série no painel. Correções que invalidam resultados de fases posteriores pedem confirmação antes de limpá-los.
+
+Ao encerrar a terceira fase, a página pública abre uma celebração com o campeão e confetes. Se o campeão venceu Zacarias, mostra o **pacote completo Champions 2026**; se perdeu, mostra a **Phantom Champions 2026 garantida**. Feche pelo botão **×**, pela tecla **Esc** ou por **Ver histórico do evento** para consultar a tabela e os placares das três fases. O botão **Rever celebração** permite abrir a tela novamente. A animação respeita a preferência de movimento reduzido do dispositivo.
+
+A gravação do evento será adicionada futuramente. Esta versão não inclui upload ou armazenamento de vídeo.
+
 São **8 confrontos no evento inteiro**, sem contar desempates: 6 na primeira fase, a final e o desafio. Isso representa de **17 a 26 partidas**, então o formato não garante duração inferior a uma hora. O tempo depende da duração de cada partida e dos intervalos.
 
 ## 1. Preparar o Supabase
@@ -102,9 +110,27 @@ npm run dev
 Preencha `.env.local` com as duas variáveis do Supabase. Reinicie `npm run dev` depois de alterá-las. O arquivo local de ambiente não deve ser versionado.
 
 ```powershell
-npm run test
 npm run build
 npm run preview
 ```
 
 Sem as variáveis, o site permite uma prévia local. A publicação do evento precisa da conexão com o Supabase.
+
+## Testes
+
+```powershell
+npm test
+```
+
+Executa os **30 testes unitários** do motor do torneio: classificação, rounds, faca e punição, desempates, avanço das fases, sorteio e proteção de resultados durante correções.
+
+Para testar a interface, tenha o **Google Chrome instalado** e instale o navegador WebKit do Playwright:
+
+```powershell
+npx playwright install webkit
+npm run test:e2e
+```
+
+O Playwright inicia o site local na porta `5190` e executa os cenários no **Chrome desktop** e no **WebKit com perfil de iPhone 13**. Os testes cobrem login, registro e correção de placares, avanço até o encerramento, atualização entre visitantes e organizador, falhas de conexão, concorrência entre versões, sorteio, uso em telas pequenas e acessibilidade.
+
+Autenticação, banco e Realtime usam respostas simuladas em memória de [e2e/mock-supabase.ts](./e2e/mock-supabase.ts). A suíte usa URL e chave fictícias; não precisa de banco ou credenciais reais e não altera o evento publicado. O relatório fica em `playwright-report/`, com capturas e traces das falhas.

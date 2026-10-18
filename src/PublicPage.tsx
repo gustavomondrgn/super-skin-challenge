@@ -1,4 +1,5 @@
-import type { CSSProperties, ReactNode } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import WinnerCelebration from "./WinnerCelebration";
 import { getProgress, getSeriesResult, getStandings } from "./domain";
 import type { Participant, Series, TournamentState } from "./domain";
 
@@ -379,6 +380,43 @@ export default function PublicPage({
   const prizeUpgraded = Boolean(
     progress.championId && progress.bossWinnerId === progress.championId,
   );
+  const celebrationKey =
+    progress.phase === "finished"
+      ? `${progress.championId}:${progress.bossWinnerId}`
+      : null;
+  const [seenCelebration, setSeenCelebration] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem("ssc-winner-celebration");
+    } catch {
+      return null;
+    }
+  });
+  const [celebrationOpen, setCelebrationOpen] = useState(false);
+  useEffect(() => {
+    setCelebrationOpen(
+      Boolean(celebrationKey && seenCelebration !== celebrationKey),
+    );
+  }, [celebrationKey, seenCelebration]);
+
+  function closeCelebration() {
+    setCelebrationOpen(false);
+    if (celebrationKey) {
+      setSeenCelebration(celebrationKey);
+      try {
+        localStorage.setItem("ssc-winner-celebration", celebrationKey);
+      } catch {
+        /* Closing still works when local storage is unavailable. */
+      }
+    }
+    requestAnimationFrame(() =>
+      document.getElementById("confrontos")?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
+        block: "start",
+      }),
+    );
+  }
   const connectionLabel = {
     live: "Ao vivo",
     preview: "Prévia",
@@ -407,11 +445,7 @@ export default function PublicPage({
       </a>
       <header className="site-header">
         <div className="container header-inner">
-          <a
-            href="#"
-            className="brand"
-            aria-label="Super Skin Challenge, início"
-          >
+          <a href="#" className="brand">
             <span className="brand-symbol">
               S<span>S</span>C
             </span>
@@ -609,6 +643,12 @@ export default function PublicPage({
                 </p>
               </div>
               <Avatar participant={champion} size="large" />
+              <button
+                className="button secondary"
+                onClick={() => setCelebrationOpen(true)}
+              >
+                Rever celebração <Icon name="trophy" size={17} />
+              </button>
             </section>
           )}
 
@@ -802,7 +842,16 @@ export default function PublicPage({
                     )}
                   </span>
                 </div>
-                <div className="phase-big-number">01</div>
+                <svg
+                  className="phase-big-number"
+                  viewBox="0 0 110 110"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <text x="108" y="95" textAnchor="end">
+                    01
+                  </text>
+                </svg>
                 <h3>Todos contra todos</h3>
                 <p>
                   Quatro jogadores. Seis confrontos.
@@ -834,7 +883,16 @@ export default function PublicPage({
                   <span>FASE 02</span>
                   <span>MD5</span>
                 </div>
-                <div className="phase-big-number">02</div>
+                <svg
+                  className="phase-big-number"
+                  viewBox="0 0 110 110"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <text x="108" y="95" textAnchor="end">
+                    02
+                  </text>
+                </svg>
                 <h3>Grande final</h3>
                 <p>
                   O 1º contra o 2º colocado.
@@ -870,7 +928,16 @@ export default function PublicPage({
                   <span>FASE 03</span>
                   <span>MD3</span>
                 </div>
-                <div className="phase-big-number">03</div>
+                <svg
+                  className="phase-big-number"
+                  viewBox="0 0 110 110"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <text x="108" y="95" textAnchor="end">
+                    03
+                  </text>
+                </svg>
                 <h3>Chefão final</h3>
                 <p>
                   O campeão encara Zacarias.
@@ -984,6 +1051,14 @@ export default function PublicPage({
           </span>
         </div>
       </footer>
+      {progress.phase === "finished" && champion && (
+        <WinnerCelebration
+          champion={champion}
+          prizeUpgraded={prizeUpgraded}
+          open={celebrationOpen}
+          onClose={closeCelebration}
+        />
+      )}
     </div>
   );
 }

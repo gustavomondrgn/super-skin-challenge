@@ -559,6 +559,7 @@ export default function AdminPage({
   const [tieB, setTieB] = useState("");
   const [pendingMapId, setPendingMapId] = useState<string | null>(null);
   const [drawingMapId, setDrawingMapId] = useState<string | null>(null);
+  const editorRef = useRef<HTMLElement>(null);
   const progress = getProgress(state);
   const standings = getStandings(state);
   const selected =
@@ -625,7 +626,7 @@ export default function AdminPage({
       return setActiveSeries(next, id);
     });
     if (ok && id) {
-      setSelectedId(id);
+      select(id);
       setTieA("");
       setTieB("");
     }
@@ -661,6 +662,18 @@ export default function AdminPage({
     setSelectedId(id);
     setEditingIndex(null);
     setNotice(null);
+    if (window.matchMedia("(max-width: 800px)").matches) {
+      window.requestAnimationFrame(() => {
+        editorRef.current?.focus({ preventScroll: true });
+        editorRef.current?.scrollIntoView({
+          block: "start",
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
+            .matches
+            ? "auto"
+            : "smooth",
+        });
+      });
+    }
   }
 
   if (auth.loading && supabase)
@@ -761,6 +774,80 @@ export default function AdminPage({
             </p>
           )}
         </div>
+        <div className="mobile-series-nav">
+          <div className="mobile-series-nav-heading">
+            <span className="eyebrow">SEQUÊNCIA DO EVENTO</span>
+            <span>
+              {
+                state.series.filter(
+                  (series) => getSeriesResult(series).completed,
+                ).length
+              }
+              /{state.series.length} concluídos
+            </span>
+          </div>
+          <div className="form-field">
+            <label htmlFor="mobile-series-select">Confronto</label>
+            <select
+              id="mobile-series-select"
+              className="input"
+              value={selected.id}
+              onChange={(event) => select(event.target.value)}
+              disabled={saving}
+            >
+              {(["league", "tiebreak", "final", "boss"] as const).map(
+                (phase) => {
+                  const matches = state.series.filter(
+                    (series) => series.phase === phase,
+                  );
+                  if (!matches.length) return null;
+                  return (
+                    <optgroup key={phase} label={phaseName[phase]}>
+                      {matches.map((series) => {
+                        const matchResult = getSeriesResult(series);
+                        const a = state.participants.find(
+                          (participant) => participant.id === series.playerA,
+                        );
+                        const b = state.participants.find(
+                          (participant) => participant.id === series.playerB,
+                        );
+                        const status = matchResult.completed
+                          ? `${matchResult.winsA} × ${matchResult.winsB} · Encerrado`
+                          : !series.playerA || !series.playerB
+                            ? "Aguardando"
+                            : state.activeSeriesId === series.id
+                              ? "Próximo resultado"
+                              : `MD${series.bestOf}`;
+                        return (
+                          <option key={series.id} value={series.id}>
+                            {String(series.order).padStart(2, "0")} ·{" "}
+                            {a?.name ?? "A definir"} × {b?.name ?? "A definir"}{" "}
+                            · {status}
+                          </option>
+                        );
+                      })}
+                    </optgroup>
+                  );
+                },
+              )}
+            </select>
+          </div>
+          {result.completed && editingIndex === null && nextSeries && (
+            <button
+              className="button primary mobile-next-series"
+              onClick={() => select(nextSeries.id)}
+            >
+              {nextSeries.phase === "final"
+                ? "Ir para a Grande Final"
+                : nextSeries.phase === "boss"
+                  ? "Ir para o desafio com Zacarias"
+                  : nextSeries.phase === "tiebreak"
+                    ? "Ir para o desempate"
+                    : "Próximo confronto"}
+              <Icon name="arrow" />
+            </button>
+          )}
+        </div>
         <div className="admin-layout">
           <aside className="admin-sidebar">
             <div className="sidebar-heading">
@@ -823,7 +910,12 @@ export default function AdminPage({
               </div>
             ))}
           </aside>
-          <section className="admin-main" aria-label="Registrar resultados">
+          <section
+            className="admin-main"
+            aria-label="Registrar resultados"
+            ref={editorRef}
+            tabIndex={-1}
+          >
             <article className="admin-card">
               <div className="section-heading">
                 <div>
@@ -1017,9 +1109,10 @@ export default function AdminPage({
                 </p>
                 <form onSubmit={createTie}>
                   <div className="form-grid">
-                    <label className="form-field">
-                      Primeiro jogador
+                    <div className="form-field">
+                      <label htmlFor="tie-player-a">Primeiro jogador</label>
                       <select
+                        id="tie-player-a"
                         className="input"
                         required
                         value={tieA}
@@ -1035,10 +1128,11 @@ export default function AdminPage({
                           </option>
                         ))}
                       </select>
-                    </label>
-                    <label className="form-field">
-                      Segundo jogador
+                    </div>
+                    <div className="form-field">
+                      <label htmlFor="tie-player-b">Segundo jogador</label>
                       <select
+                        id="tie-player-b"
                         className="input"
                         required
                         value={tieB}
@@ -1056,7 +1150,7 @@ export default function AdminPage({
                             </option>
                           ))}
                       </select>
-                    </label>
+                    </div>
                   </div>
                   <button
                     className="button primary"
