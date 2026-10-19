@@ -229,8 +229,10 @@ export default function EventRecordings({
               className="recordings-poster"
               type="button"
               onClick={() => play(selected)}
-              aria-label={`Assistir ${seriesLabel(selected.series)}: ${matchup}`}
             >
+              <span className="sr-only">
+                {seriesLabel(selected.series)}: {matchup}.
+              </span>
               <span className="recordings-poster__edition">
                 SUPER SKIN CHALLENGE <span>2026</span>
               </span>
@@ -318,19 +320,12 @@ export default function EventRecordings({
               {group.entries.map((recording) => {
                 const current = selected.seriesId === recording.seriesId;
                 const cardDuration = durationLabel(recording.durationSeconds);
-                const playerA = state.participants.find(
-                  (participant) => participant.id === recording.series.playerA,
-                );
-                const playerB = state.participants.find(
-                  (participant) => participant.id === recording.series.playerB,
-                );
                 return (
                   <button
                     key={recording.seriesId}
                     className={`recording-card${current ? " is-selected" : ""}${recording.series.phase !== "league" ? " recording-card--decision" : ""}`}
                     type="button"
                     aria-pressed={current}
-                    aria-label={`Assistir ${seriesLabel(recording.series)}: ${playerA?.name ?? "A definir"} contra ${playerB?.name ?? "A definir"}`}
                     onClick={() => play(recording, true)}
                   >
                     <span className="recording-card__top">

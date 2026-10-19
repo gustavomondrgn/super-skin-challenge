@@ -1,5 +1,13 @@
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
-import WinnerCelebration from "./WinnerCelebration";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
+import WinnerCelebration, {
+  type WinnerCelebrationHandle,
+} from "./WinnerCelebration";
 import EventRecordings from "./EventRecordings";
 import { getProgress, getSeriesResult, getStandings } from "./domain";
 import type { Participant, Series, TournamentState } from "./domain";
@@ -395,6 +403,7 @@ export default function PublicPage({
     }
   });
   const [celebrationOpen, setCelebrationOpen] = useState(false);
+  const celebrationRef = useRef<WinnerCelebrationHandle>(null);
   useEffect(() => {
     setCelebrationOpen(
       Boolean(celebrationKey && seenCelebration !== celebrationKey),
@@ -650,7 +659,11 @@ export default function PublicPage({
               <Avatar participant={champion} size="large" />
               <button
                 className="button secondary"
-                onClick={() => setCelebrationOpen(true)}
+                onClick={() => {
+                  // Start within this gesture so mobile browsers can play the fanfare.
+                  celebrationRef.current?.startMusic();
+                  setCelebrationOpen(true);
+                }}
               >
                 Rever celebração <Icon name="trophy" size={17} />
               </button>
@@ -1059,6 +1072,7 @@ export default function PublicPage({
       </footer>
       {progress.phase === "finished" && champion && (
         <WinnerCelebration
+          ref={celebrationRef}
           champion={champion}
           prizeUpgraded={prizeUpgraded}
           open={celebrationOpen}

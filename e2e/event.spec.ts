@@ -735,7 +735,7 @@ test("winner modal fits a small screen, traps keyboard, closes with Escape and r
 test("public page, admin form and final modal pass automated accessibility checks", async ({
   page,
   context,
-}) => {
+}, testInfo) => {
   const backend = new MockSupabase(createInitialState());
   await backend.install(context);
   await page.goto("/");
@@ -749,6 +749,11 @@ test("public page, admin form and final modal pass automated accessibility check
     const report = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
       .analyze();
+    if (report.violations.length)
+      await testInfo.attach(`${stage}-accessibility-violations`, {
+        body: JSON.stringify(report.violations, null, 2),
+        contentType: "application/json",
+      });
     expect(
       report.violations.map((violation) => ({
         id: violation.id,

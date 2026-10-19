@@ -146,8 +146,7 @@ test("recordings load only after a click and switch one privacy-enhanced player 
   ).toBeVisible();
 
   const boss = page.getByRole("button", {
-    name: "Assistir Chefão final: musashi contra Tapioca",
-    exact: true,
+    name: /Chefão final.*musashi.*Tapioca/,
   });
   await boss.scrollIntoViewIfNeeded();
   if (testInfo.project.use.hasTouch) await boss.tap();
@@ -198,8 +197,7 @@ test("recordings load only after a click and switch one privacy-enhanced player 
   expect(requests).toHaveLength(requestsBeforeUpdate);
 
   const final = page.getByRole("button", {
-    name: "Assistir Grande final: Musashi atualizado contra kurtz",
-    exact: true,
+    name: /Grande final.*Musashi atualizado.*kurtz/,
   });
   await final.focus();
   await final.press("Enter");
