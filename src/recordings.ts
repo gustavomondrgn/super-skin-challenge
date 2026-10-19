@@ -17,6 +17,14 @@ export const EVENT_RECORDINGS: readonly EventRecording[] = [
     durationSeconds: 644.5,
   },
   {
+    seriesId: "league-2",
+    youtubeId: "tZo_xBmeYdQ",
+    title: "Kurtz × Musashi — BO3",
+    durationSeconds: 1150.2,
+    notes:
+      "Um round de Musashi no jogo 1 não foi capturado na gravação original. O vídeo retoma com o placar atualizado.",
+  },
+  {
     seriesId: "league-3",
     youtubeId: "uRmxGVmrvI0",
     title: "isinha × Kurtz — BO3",
@@ -42,5 +50,21 @@ export const EVENT_RECORDINGS: readonly EventRecording[] = [
     youtubeId: "El3XrmKNXmg",
     title: "Alice × Kurtz — BO3",
     durationSeconds: 686.3,
+  },
+  {
+    seriesId: "final",
+    youtubeId: "jWBmLbesbrM",
+    title: "Grande final — Musashi × isinha — BO5",
+    durationSeconds: 2327.9,
+    notes:
+      "Um round de isinha no jogo 1 não foi capturado na gravação original. O vídeo retoma com o placar atualizado.",
+  },
+  {
+    seriesId: "boss",
+    youtubeId: "JXCFKYy5HWg",
+    title: "Pacote Champions — Musashi × Tapioca — BO1",
+    durationSeconds: 370.4,
+    notes:
+      "Dois rounds, um de cada jogador, não foram capturados na gravação original. O vídeo retoma com o placar atualizado.",
   },
 ];
