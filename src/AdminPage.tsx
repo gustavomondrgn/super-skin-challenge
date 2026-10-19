@@ -840,7 +840,7 @@ export default function AdminPage({
               {nextSeries.phase === "final"
                 ? "Ir para a Grande Final"
                 : nextSeries.phase === "boss"
-                  ? "Ir para o desafio com Zacarias"
+                  ? "Ir para o desafio com Tapioca"
                   : nextSeries.phase === "tiebreak"
                     ? "Ir para o desempate"
                     : "Próximo confronto"}
@@ -893,7 +893,7 @@ export default function AdminPage({
                             {a?.name ?? "A definir"}{" "}
                             <span className="muted">×</span>{" "}
                             {b?.name ??
-                              (phase === "boss" ? "Zacarias" : "A definir")}
+                              (phase === "boss" ? "Tapioca" : "A definir")}
                           </strong>
                           <small>
                             {seriesResult.completed
@@ -961,7 +961,7 @@ export default function AdminPage({
                   <p>
                     {selected.phase === "final"
                       ? "A final será preenchida quando os seis confrontos e os desempates da primeira fase terminarem."
-                      : "O vencedor da Grande Final enfrentará Zacarias pelo pacote completo."}
+                      : "O vencedor da Grande Final enfrentará Tapioca em MD1 pelo pacote completo."}
                   </p>
                 </div>
               ) : (
@@ -1037,11 +1037,13 @@ export default function AdminPage({
                         venceu!
                       </h3>
                       {selected.phase === "final" && (
-                        <p>Phantom garantida. Próximo desafio: Zacarias.</p>
+                        <p>
+                          Phantom garantida. Próximo desafio: Tapioca em MD1.
+                        </p>
                       )}
                       {selected.phase === "boss" && (
                         <p>
-                          {result.winnerId === "zacarias"
+                          {result.winnerId === "tapioca"
                             ? "O campeão mantém a Phantom Champions 2026."
                             : "Pacote completo Champions 2026 conquistado!"}
                         </p>

@@ -230,15 +230,17 @@ function PlayerName({
   placeholder?: string;
   large?: boolean;
 }) {
-  const player = state.participants.find((p) => p.id === id);
+  const player =
+    state.participants.find((p) => p.id === id) ??
+    (id === "tapioca"
+      ? { id: "tapioca", name: "Tapioca", avatar: null, accent: "#d6b478" }
+      : null);
   return (
     <span
       className={`player-identity${large ? " player-identity--large" : ""}`}
     >
       <Avatar participant={player} size={large ? "large" : "small"} />
-      <span>
-        {player?.name ?? (id === "zacarias" ? "Zacarias" : placeholder)}
-      </span>
+      <span>{player?.name ?? placeholder}</span>
     </span>
   );
 }
@@ -490,7 +492,9 @@ export default function PublicPage({
               <div className="hero-participants">
                 <div className="avatar-stack">
                   {state.participants
-                    .filter((p) => p.id !== "zacarias")
+                    .filter((p) =>
+                      ["isinha", "alice", "kurtz", "musashi"].includes(p.id),
+                    )
                     .slice(0, 4)
                     .map((p) => (
                       <Avatar key={p.id} participant={p} />
@@ -926,7 +930,7 @@ export default function PublicPage({
               >
                 <div className="phase-top">
                   <span>FASE 03</span>
-                  <span>MD3</span>
+                  <span>MD{boss?.bestOf ?? 1}</span>
                 </div>
                 <svg
                   className="phase-big-number"
@@ -940,9 +944,9 @@ export default function PublicPage({
                 </svg>
                 <h3>Chefão final</h3>
                 <p>
-                  O campeão encara Zacarias.
+                  O campeão encara Tapioca.
                   <br />
-                  Vença e faça o upgrade do prêmio.
+                  Uma vitória vale o pacote completo.
                 </p>
                 <div className="phase-duel">
                   <PlayerName
@@ -952,9 +956,9 @@ export default function PublicPage({
                   />
                   <span>×</span>
                   <PlayerName
-                    id={boss?.playerB ?? "zacarias"}
+                    id={boss?.playerB ?? "tapioca"}
                     state={state}
-                    placeholder="Zacarias"
+                    placeholder="Tapioca"
                   />
                 </div>
                 <div className="phase-bottom">
@@ -971,7 +975,7 @@ export default function PublicPage({
             )}
             <p className="prize-footnote">
               <Icon name="shield" size={15} /> A Phantom conquistada na final
-              continua garantida, mesmo se o campeão perder para Zacarias.
+              continua garantida, mesmo se o campeão perder para Tapioca.
             </p>
           </section>
 

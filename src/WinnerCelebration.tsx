@@ -152,7 +152,7 @@ export default function WinnerCelebration({
             </h1>
             <p id={descriptionId} className="winner-celebration__description">
               {prizeUpgraded
-                ? "Venceu a grande final, derrotou Zacarias e levou tudo."
+                ? "Venceu a grande final, derrotou Tapioca e levou tudo."
                 : "Venceu a grande final. A Champions já tem dono."}
             </p>
             <div className="winner-celebration__prize">

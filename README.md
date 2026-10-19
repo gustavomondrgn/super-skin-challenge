@@ -7,22 +7,22 @@ Site do evento entre **isinha, alice, kurtz e musashi**, com classificação, co
 - **Fase 1:** todos contra todos em MD3. Quatro pessoas geram **6 confrontos**, e cada pessoa disputa 3.
 - **Classificação:** confrontos vencidos → rounds ganhos → MD1 extra em empate absoluto. Os rounds dos desempates não alteram os totais da fase regular.
 - **Fase 2:** os dois primeiros disputam uma MD5. O vencedor garante a Phantom Champions 2026.
-- **Fase 3:** o campeão enfrenta Zacarias em MD3. Se vencer, leva o pacote completo; a Phantom continua garantida se perder.
+- **Fase 3:** o campeão enfrenta Tapioca em MD1 (BO1). Uma vitória garante o pacote completo; a Phantom continua garantida se perder.
 - **Faca ou punição:** encerra apenas a partida atual; vencedor recebe 10 rounds oficiais e perdedor mantém seu placar real.
 
-O regulamento completo está em [contexto_brutal_super_skin_challenge_v1_1.md](./contexto_brutal_super_skin_challenge_v1_1.md). A conversa posterior definiu os quatro participantes acima e excluiu os rounds extras da soma da fase regular.
+O regulamento de base está em [contexto_brutal_super_skin_challenge_v1_1.md](./contexto_brutal_super_skin_challenge_v1_1.md). A conversa posterior definiu os quatro participantes acima, excluiu os rounds extras da soma da fase regular e atualizou o desafio final para Tapioca em MD1.
 
 O painel é acessado diretamente por `/admin`; a página pública não mostra links de administração. Em cada confronto, **Sortear mapa** escolhe um dos cinco mapas de duelo (A, B, C, D ou E) para toda a série e salva o resultado. Mapas podem se repetir entre sorteios. **Sortear novamente** pede confirmação antes de substituir o mapa. Os dados antigos continuam compatíveis; não é necessário executar um novo SQL.
 
 A página pública e o painel se adaptam ao celular. No painel mobile, o seletor **Confronto** permite navegar pela sequência sem percorrer uma lista lateral; placares, sorteio e correções continuam disponíveis.
 
-Ao concluir os seis confrontos e resolver os empates em MD1, o site preenche automaticamente a Grande Final com os dois primeiros colocados. A vitória na MD5 define o campeão e libera o confronto contra Zacarias. **Próximo confronto** abre a próxima série no painel. Correções que invalidam resultados de fases posteriores pedem confirmação antes de limpá-los.
+Ao concluir os seis confrontos e resolver os empates em MD1, o site preenche automaticamente a Grande Final com os dois primeiros colocados. A vitória na MD5 define o campeão e libera o confronto contra Tapioca em MD1. **Próximo confronto** abre a próxima série no painel. Correções que invalidam resultados de fases posteriores pedem confirmação antes de limpá-los.
 
-Ao encerrar a terceira fase, a página pública abre uma celebração com o campeão e confetes. Se o campeão venceu Zacarias, mostra o **pacote completo Champions 2026**; se perdeu, mostra a **Phantom Champions 2026 garantida**. Feche pelo botão **×**, pela tecla **Esc** ou por **Ver histórico do evento** para consultar a tabela e os placares das três fases. O botão **Rever celebração** permite abrir a tela novamente. A animação respeita a preferência de movimento reduzido do dispositivo.
+Ao encerrar a terceira fase, a página pública abre uma celebração com o campeão e confetes. Se o campeão venceu Tapioca, mostra o **pacote completo Champions 2026**; se perdeu, mostra a **Phantom Champions 2026 garantida**. Feche pelo botão **×**, pela tecla **Esc** ou por **Ver histórico do evento** para consultar a tabela e os placares das três fases. O botão **Rever celebração** permite abrir a tela novamente. A animação respeita a preferência de movimento reduzido do dispositivo.
 
 A gravação do evento será adicionada futuramente. Esta versão não inclui upload ou armazenamento de vídeo.
 
-São **8 confrontos no evento inteiro**, sem contar desempates: 6 na primeira fase, a final e o desafio. Isso representa de **17 a 26 partidas**, então o formato não garante duração inferior a uma hora. O tempo depende da duração de cada partida e dos intervalos.
+São **8 confrontos no evento inteiro**, sem contar desempates: 6 na primeira fase, a final e o desafio. Isso representa de **16 a 24 partidas**, então o formato não garante duração inferior a uma hora. O tempo depende da duração de cada partida e dos intervalos.
 
 ## 1. Preparar o Supabase
 
@@ -122,7 +122,7 @@ Sem as variáveis, o site permite uma prévia local. A publicação do evento pr
 npm test
 ```
 
-Executa os **30 testes unitários** do motor do torneio: classificação, rounds, faca e punição, desempates, avanço das fases, sorteio e proteção de resultados durante correções.
+Executa os **37 testes unitários** do motor do torneio: classificação, rounds, faca e punição, desempates, avanço das fases, sorteio, migração do desafio pendente para Tapioca em MD1 e proteção de resultados durante correções.
 
 Para testar a interface, tenha o **Google Chrome instalado** e instale o navegador WebKit do Playwright:
 

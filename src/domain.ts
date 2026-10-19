@@ -61,7 +61,7 @@ export class DownstreamResultsError extends Error {
 }
 
 const LEAGUE_IDS = ["isinha", "alice", "kurtz", "musashi"] as const;
-const PARTICIPANT_IDS = [...LEAGUE_IDS, "zacarias"];
+const PARTICIPANT_IDS = [...LEAGUE_IDS, "tapioca"];
 const PAIRS = [
   ["isinha", "alice"],
   ["kurtz", "musashi"],
@@ -99,19 +99,21 @@ export function createInitialState(): TournamentState {
         avatar: "/avatars/musashi.png",
         accent: "#e1ae68",
       },
-      { id: "zacarias", name: "Zacarias", avatar: null, accent: "#d6b478" },
+      { id: "tapioca", name: "Tapioca", avatar: null, accent: "#d6b478" },
     ],
     series: [
-      ...PAIRS.map(([playerA, playerB], index): Series => ({
-        id: `league-${index + 1}`,
-        phase: "league",
-        order: index + 1,
-        playerA,
-        playerB,
-        bestOf: 3,
-        map: null,
-        games: [],
-      })),
+      ...PAIRS.map(
+        ([playerA, playerB], index): Series => ({
+          id: `league-${index + 1}`,
+          phase: "league",
+          order: index + 1,
+          playerA,
+          playerB,
+          bestOf: 3,
+          map: null,
+          games: [],
+        }),
+      ),
       {
         id: "final",
         phase: "final",
@@ -128,7 +130,7 @@ export function createInitialState(): TournamentState {
         order: 8,
         playerA: null,
         playerB: null,
-        bestOf: 3,
+        bestOf: 1,
         map: null,
         games: [],
       },
@@ -251,7 +253,7 @@ export function getStandings(state: TournamentState): Standing[] {
   const rows = baseStandings(state);
   const complete = leagueComplete(state);
   const result: Standing[] = [];
-  for (let index = 0; index < rows.length;) {
+  for (let index = 0; index < rows.length; ) {
     let end = index + 1;
     while (
       end < rows.length &&
@@ -456,7 +458,7 @@ function reconcile(state: TournamentState): TournamentState {
     qualified[1]?.participant.id ?? null,
   );
   const champion = getSeriesResult(final).winnerId;
-  assign(boss, champion, champion ? "zacarias" : null);
+  assign(boss, champion, champion ? "tapioca" : null);
   if (state.activeSeriesId !== null) {
     const current = state.series.find(
       (series) => series.id === state.activeSeriesId,
@@ -639,7 +641,52 @@ export function validateState(value: unknown): TournamentState {
   ) {
     throw new Error("Formato ou versão dos dados do torneio inválidos.");
   }
-  const participants = data.participants.map((value): Participant => {
+  // The live event originally had Zacarias in an MD3. Only an unplayed boss
+  // series can migrate: results against one person must never belong to another.
+  const legacyBossParticipant = data.participants.find(
+    (value) => object(value).id === "zacarias",
+  );
+  if (legacyBossParticipant) {
+    const legacyBoss = data.series.find((value) => object(value).id === "boss");
+    if (
+      !legacyBoss ||
+      legacyBoss.phase !== "boss" ||
+      legacyBoss.bestOf !== 3 ||
+      !Array.isArray(legacyBoss.games) ||
+      (legacyBoss.playerB !== null && legacyBoss.playerB !== "zacarias")
+    ) {
+      throw new Error(
+        "Formato legado do chefão inválido; não foi possível migrar para Tapioca em MD1.",
+      );
+    }
+    if (legacyBoss.games.length > 0) {
+      throw new Error(
+        "O desafio legado contra Zacarias já tem partidas registradas e não pode ser atribuído a Tapioca. Revise os resultados antes de migrar.",
+      );
+    }
+  }
+  const participantValues = legacyBossParticipant
+    ? data.participants.map((value) => {
+        const participant = object(value);
+        return participant.id === "zacarias"
+          ? { ...participant, id: "tapioca", name: "Tapioca", avatar: null }
+          : participant;
+      })
+    : data.participants;
+  const seriesValues = legacyBossParticipant
+    ? data.series.map((value) => {
+        const series = object(value);
+        return series.id === "boss"
+          ? {
+              ...series,
+              bestOf: 1,
+              playerB:
+                series.playerB === "zacarias" ? "tapioca" : series.playerB,
+            }
+          : series;
+      })
+    : data.series;
+  const participants = participantValues.map((value): Participant => {
     const participant = object(value);
     if (
       typeof participant.id !== "string" ||
@@ -668,7 +715,7 @@ export function validateState(value: unknown): TournamentState {
   });
   if (new Set(participants.map((participant) => participant.id)).size !== 5)
     throw new Error("Participantes duplicados.");
-  const series = data.series.map((value): Series => {
+  const series = seriesValues.map((value): Series => {
     const item = object(value);
     if (
       typeof item.id !== "string" ||
@@ -775,7 +822,7 @@ export function validateState(value: unknown): TournamentState {
     final.bestOf !== 5 ||
     !boss ||
     boss.phase !== "boss" ||
-    boss.bestOf !== 3
+    boss.bestOf !== 1
   )
     throw new Error("Formato da final ou do chefão inválido.");
   for (const item of series.filter((matchup) => matchup.phase === "tiebreak")) {

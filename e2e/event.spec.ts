@@ -28,6 +28,9 @@ async function login(
 }
 
 async function selectSeries(page: Page, id: string, backend: MockSupabase) {
+  await expect(
+    page.getByRole("heading", { name: "Controle do evento.", exact: true }),
+  ).toBeVisible();
   if (await page.locator("#mobile-series-select").isVisible())
     await page.getByLabel("Confronto", { exact: true }).selectOption(id);
   else {
@@ -100,12 +103,11 @@ function finishedState(upgraded: boolean) {
       scoreB: 0,
       reason: "normal",
     });
-  for (let game = 0; game < 2; game++)
-    state = applyGameResult(state, "boss", game, {
-      scoreA: upgraded ? 10 : 0,
-      scoreB: upgraded ? 0 : 10,
-      reason: "normal",
-    });
+  state = applyGameResult(state, "boss", 0, {
+    scoreA: upgraded ? 10 : 0,
+    scoreB: upgraded ? 0 : 10,
+    reason: "normal",
+  });
   return state;
 }
 
@@ -218,21 +220,48 @@ for (const upgraded of [false, true])
         await saveScore(page, backend, "final", 10, 0);
       expect(
         backend.getState().series.find((series) => series.id === "boss"),
-      ).toMatchObject({ playerA: "isinha", playerB: "zacarias" });
-      await expect(viewer.locator(".spotlight")).toContainText("Zacarias");
-      await expect(viewer.locator(".spotlight-format")).toContainText("MD3");
+      ).toMatchObject({ playerA: "isinha", playerB: "tapioca", bestOf: 1 });
+      await expect(viewer.locator(".spotlight")).toContainText("Tapioca");
+      await expect(viewer.locator(".spotlight-format")).toContainText("MD1");
+      await expect(page.locator(".series-complete")).toContainText(
+        "Phantom garantida. Próximo desafio: Tapioca em MD1.",
+      );
       await page
         .locator(".series-complete")
         .getByRole("button", { name: "Próximo confronto", exact: true })
         .click();
-      for (let game = 0; game < 2; game++)
-        await saveScore(
-          page,
-          backend,
-          "boss",
-          upgraded ? 10 : 0,
-          upgraded ? 0 : 10,
-        );
+      await saveScore(
+        page,
+        backend,
+        "boss",
+        upgraded ? 10 : 0,
+        upgraded ? 0 : 10,
+      );
+      const boss = backend
+        .getState()
+        .series.find((series) => series.id === "boss")!;
+      expect(boss.games).toHaveLength(1);
+      expect(getSeriesResult(boss)).toMatchObject({
+        completed: true,
+        winnerId: upgraded ? "isinha" : "tapioca",
+      });
+      await expect(page.locator(".game-history-row")).toHaveCount(1);
+      await expect(page.locator(".game-form")).toHaveCount(0);
+      await expect(
+        page.getByRole("button", { name: "Salvar partida", exact: true }),
+      ).toHaveCount(0);
+      await expect(
+        page
+          .locator(".series-complete")
+          .getByRole("button", { name: "Próximo confronto", exact: true }),
+      ).toHaveCount(0);
+      expect(() =>
+        applyGameResult(backend.getState(), "boss", 1, {
+          scoreA: 10,
+          scoreB: 0,
+          reason: "normal",
+        }),
+      ).toThrow();
       const celebration = viewer.getByRole("dialog");
       await expect(celebration).toBeVisible();
       await expect(
@@ -252,7 +281,7 @@ for (const upgraded of [false, true])
       await expect(viewer.locator(".final-matches .series-card")).toHaveCount(
         2,
       );
-      for (const [index, games] of [3, 2].entries()) {
+      for (const [index, games] of [3, 1].entries()) {
         const series = viewer.locator(".final-matches .series-card").nth(index);
         await series.locator("summary").click();
         await expect(series.locator(".series-game")).toHaveCount(games);
@@ -284,7 +313,7 @@ for (const upgraded of [false, true])
         backend
           .getState()
           .series.reduce((total, series) => total + series.games.length, 0),
-      ).toBe(17);
+      ).toBe(16);
       expect(browserErrors).toEqual([]);
     } finally {
       await viewerContext.close();
@@ -413,6 +442,105 @@ test("map draw is persisted, confirmed on redraw and preserved when qualifying f
   );
 });
 
+test("legacy Zacarias MD3 loads as Tapioca MD1 and persists migration only with the real result", async ({
+  page,
+  context,
+}) => {
+  let legacy = seededLeague();
+  for (let game = 0; game < 3; game++)
+    legacy = applyGameResult(legacy, "final", game, {
+      scoreA: 10,
+      scoreB: 0,
+      reason: "normal",
+    });
+  legacy.participants = legacy.participants.map((participant) =>
+    participant.id === "tapioca"
+      ? { ...participant, id: "zacarias", name: "Zacarias", avatar: null }
+      : participant,
+  );
+  const legacyBoss = legacy.series.find((series) => series.id === "boss")!;
+  legacyBoss.playerB = "zacarias";
+  legacyBoss.bestOf = 3;
+  legacyBoss.map = "A";
+  legacy.activeSeriesId = "boss";
+
+  const leagueBefore = structuredClone(
+    legacy.series.filter((series) => series.phase === "league"),
+  );
+  const finalBefore = structuredClone(
+    legacy.series.find((series) => series.id === "final"),
+  );
+  const competitorsBefore = structuredClone(legacy.participants.slice(0, 4));
+  const backend = new MockSupabase(legacy);
+  const rowBefore = JSON.stringify(backend.row);
+  await backend.install(context);
+  await login(page);
+  await expect(
+    page.getByRole("heading", { name: "Controle do evento." }),
+  ).toBeVisible();
+  await selectSeries(page, "boss", backend);
+  await expect(page.locator(".admin-versus")).toContainText("Tapioca");
+  await expect(page.locator(".admin-versus")).not.toContainText("Zacarias");
+  await expect(
+    page
+      .locator(".admin-card")
+      .first()
+      .locator(".section-heading")
+      .first()
+      .locator(".format-badge"),
+  ).toHaveText("MD1");
+  await expect(page.locator(".game-form h3")).toHaveText("Partida 1");
+  await expect(page.locator(".map-draw-tile.is-selected")).toContainText("A");
+  expect(backend.writes).toBe(0);
+  expect(JSON.stringify(backend.row)).toBe(rowBefore);
+
+  await saveScore(page, backend, "boss", 10, 7);
+
+  const persisted = backend.getState();
+  const boss = persisted.series.find((series) => series.id === "boss")!;
+  expect(backend.writes).toBe(1);
+  expect(backend.row?.version).toBe(2);
+  expect(persisted.participants.slice(0, 4)).toEqual(competitorsBefore);
+  expect(persisted.participants[4]).toMatchObject({
+    id: "tapioca",
+    name: "Tapioca",
+    avatar: null,
+  });
+  expect(
+    persisted.participants.some((participant) => participant.id === "zacarias"),
+  ).toBe(false);
+  expect(
+    persisted.series.filter((series) => series.phase === "league"),
+  ).toEqual(leagueBefore);
+  expect(persisted.series.find((series) => series.id === "final")).toEqual(
+    finalBefore,
+  );
+  expect(boss).toMatchObject({
+    playerA: "isinha",
+    playerB: "tapioca",
+    bestOf: 1,
+    map: "A",
+  });
+  expect(boss.games).toHaveLength(1);
+  expect(getSeriesResult(boss)).toMatchObject({
+    completed: true,
+    winnerId: "isinha",
+  });
+  expect(persisted.activeSeriesId).toBeNull();
+  await expect(page.locator(".game-form")).toHaveCount(0);
+  await expect(page.locator(".series-complete")).toContainText(
+    "Pacote completo Champions 2026 conquistado!",
+  );
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Controle do evento." }),
+  ).toBeVisible();
+  await selectSeries(page, "boss", backend);
+  await expect(page.locator(".admin-versus")).toContainText("Tapioca");
+  await expect(page.locator(".game-history-row")).toHaveCount(1);
+  expect(backend.writes).toBe(1);
+});
+
 test("corrections protect played final and boss until explicit confirmation", async ({
   page,
   context,
@@ -420,6 +548,12 @@ test("corrections protect played final and boss until explicit confirmation", as
   const backend = new MockSupabase(finishedState(false));
   await backend.install(context);
   await login(page);
+  await selectSeries(page, "boss", backend);
+  await expect(page.locator(".game-history-row")).toHaveCount(1);
+  await expect(page.locator(".series-complete")).toContainText(
+    "Tapioca venceu!",
+  );
+  await selectSeries(page, "league-1", backend);
   await expect(page.locator(".game-history-row")).toHaveCount(2);
   const original = JSON.stringify(backend.getState());
   page.once("dialog", (dialog) => dialog.accept());

@@ -15,6 +15,252 @@ import {
   type TournamentState,
 } from "./domain";
 
+// Exact public tournament data from the version-49 backup, kept inline so CI
+// does not depend on the ignored .qa directory or any production connection.
+const legacyProductionSnapshot = {
+  series: [
+    {
+      id: "league-1",
+      map: "A",
+      games: [
+        {
+          reason: "normal",
+          scoreA: 10,
+          scoreB: 5,
+          winnerId: "isinha",
+        },
+        {
+          reason: "knife",
+          scoreA: 4,
+          scoreB: 10,
+          winnerId: "alice",
+          scoreAtTermination: {
+            a: 4,
+            b: 1,
+          },
+        },
+        {
+          reason: "normal",
+          scoreA: 10,
+          scoreB: 3,
+          winnerId: "isinha",
+        },
+      ],
+      order: 1,
+      phase: "league",
+      bestOf: 3,
+      playerA: "isinha",
+      playerB: "alice",
+    },
+    {
+      id: "league-2",
+      map: "B",
+      games: [
+        {
+          reason: "normal",
+          scoreA: 10,
+          scoreB: 8,
+          winnerId: "kurtz",
+        },
+        {
+          reason: "normal",
+          scoreA: 2,
+          scoreB: 10,
+          winnerId: "musashi",
+        },
+        {
+          reason: "normal",
+          scoreA: 5,
+          scoreB: 10,
+          winnerId: "musashi",
+        },
+      ],
+      order: 2,
+      phase: "league",
+      bestOf: 3,
+      playerA: "kurtz",
+      playerB: "musashi",
+    },
+    {
+      id: "league-3",
+      map: "C",
+      games: [
+        {
+          reason: "normal",
+          scoreA: 10,
+          scoreB: 4,
+          winnerId: "isinha",
+        },
+        {
+          reason: "normal",
+          scoreA: 10,
+          scoreB: 6,
+          winnerId: "isinha",
+        },
+      ],
+      order: 3,
+      phase: "league",
+      bestOf: 3,
+      playerA: "isinha",
+      playerB: "kurtz",
+    },
+    {
+      id: "league-4",
+      map: "E",
+      games: [
+        {
+          reason: "normal",
+          scoreA: 4,
+          scoreB: 10,
+          winnerId: "musashi",
+        },
+        {
+          reason: "normal",
+          scoreA: 5,
+          scoreB: 10,
+          winnerId: "musashi",
+        },
+      ],
+      order: 4,
+      phase: "league",
+      bestOf: 3,
+      playerA: "alice",
+      playerB: "musashi",
+    },
+    {
+      id: "league-5",
+      map: "A",
+      games: [
+        {
+          reason: "normal",
+          scoreA: 8,
+          scoreB: 10,
+          winnerId: "musashi",
+        },
+        {
+          reason: "normal",
+          scoreA: 9,
+          scoreB: 10,
+          winnerId: "musashi",
+        },
+      ],
+      order: 5,
+      phase: "league",
+      bestOf: 3,
+      playerA: "isinha",
+      playerB: "musashi",
+    },
+    {
+      id: "league-6",
+      map: "C",
+      games: [
+        {
+          reason: "normal",
+          scoreA: 8,
+          scoreB: 10,
+          winnerId: "kurtz",
+        },
+        {
+          reason: "normal",
+          scoreA: 6,
+          scoreB: 10,
+          winnerId: "kurtz",
+        },
+      ],
+      order: 6,
+      phase: "league",
+      bestOf: 3,
+      playerA: "alice",
+      playerB: "kurtz",
+    },
+    {
+      id: "final",
+      map: "E",
+      games: [
+        {
+          reason: "normal",
+          scoreA: 7,
+          scoreB: 10,
+          winnerId: "isinha",
+        },
+        {
+          reason: "normal",
+          scoreA: 9,
+          scoreB: 10,
+          winnerId: "isinha",
+        },
+        {
+          reason: "normal",
+          scoreA: 10,
+          scoreB: 9,
+          winnerId: "musashi",
+        },
+        {
+          reason: "normal",
+          scoreA: 10,
+          scoreB: 4,
+          winnerId: "musashi",
+        },
+        {
+          reason: "normal",
+          scoreA: 10,
+          scoreB: 6,
+          winnerId: "musashi",
+        },
+      ],
+      order: 7,
+      phase: "final",
+      bestOf: 5,
+      playerA: "musashi",
+      playerB: "isinha",
+    },
+    {
+      id: "boss",
+      map: "A",
+      games: [],
+      order: 8,
+      phase: "boss",
+      bestOf: 3,
+      playerA: "musashi",
+      playerB: "zacarias",
+    },
+  ],
+  participants: [
+    {
+      id: "isinha",
+      name: "isinha",
+      accent: "#e68cc9",
+      avatar: "/avatars/isinha.png",
+    },
+    {
+      id: "alice",
+      name: "alice",
+      accent: "#9d95e8",
+      avatar: "/avatars/alice.png",
+    },
+    {
+      id: "kurtz",
+      name: "kurtz",
+      accent: "#71c9ba",
+      avatar: "/avatars/kurtz.png",
+    },
+    {
+      id: "musashi",
+      name: "musashi",
+      accent: "#e1ae68",
+      avatar: "/avatars/musashi.png",
+    },
+    {
+      id: "zacarias",
+      name: "Zacarias",
+      accent: "#d6b478",
+      avatar: null,
+    },
+  ],
+  schemaVersion: 1,
+  activeSeriesId: "boss",
+};
+
 function sweep(
   state: TournamentState,
   id: string,
@@ -56,7 +302,7 @@ function md1(
 }
 
 describe("official event structure", () => {
-  it("creates exactly six unique MD3 round-robin confrontations and excludes Zacarias from the table", () => {
+  it("creates exactly six unique MD3 round-robin confrontations and excludes Tapioca from the table", () => {
     const state = createInitialState();
     const matches = state.series.filter((series) => series.phase === "league");
     expect(matches).toHaveLength(6);
@@ -73,7 +319,7 @@ describe("official event structure", () => {
       expect(row.tied).toBe(false);
     }
     expect(getStandings(state).map((row) => row.participant.id)).not.toContain(
-      "zacarias",
+      "tapioca",
     );
     expect(
       state.series.find((series) => series.id === "final")!.playerA,
@@ -207,13 +453,13 @@ describe("official event structure", () => {
     });
     expect(state.series.find((series) => series.id === "boss")).toMatchObject({
       playerA: "isinha",
-      playerB: "zacarias",
+      playerB: "tapioca",
     });
     state = sweep(state, "boss", "b");
     expect(getProgress(state)).toMatchObject({
       phase: "finished",
       championId: "isinha",
-      bossWinnerId: "zacarias",
+      bossWinnerId: "tapioca",
     });
     expect(validateState(JSON.parse(JSON.stringify(state)))).toEqual(state);
   });
@@ -333,7 +579,7 @@ describe("MD1 and ranking", () => {
     const state = league(["a", "a", "a", "a", "b", "a"]);
     expect(() => addTiebreak(state, "isinha", "kurtz")).toThrow(/empatados/);
     expect(() => addTiebreak(state, "isinha", "isinha")).toThrow(/empatados/);
-    expect(() => addTiebreak(state, "zacarias", "alice")).toThrow(/empatados/);
+    expect(() => addTiebreak(state, "tapioca", "alice")).toThrow(/empatados/);
     expect(() =>
       addTiebreak(addTiebreak(state, "isinha", "alice"), "alice", "isinha"),
     ).toThrow(/Já existe/);
@@ -481,7 +727,7 @@ describe("safe result editing", () => {
     expect(getProgress(corrected)).toMatchObject({
       phase: "finished",
       championId: "isinha",
-      bossWinnerId: "zacarias",
+      bossWinnerId: "tapioca",
     });
     expect(
       corrected.series.find((series) => series.id === "final")!.games,
@@ -589,7 +835,7 @@ describe("untrusted persisted state", () => {
       state.participants[0]!.accent = "red;display:none";
     });
     mutate((state) => {
-      state.series[0]!.playerB = "zacarias";
+      state.series[0]!.playerB = "tapioca";
     });
     mutate((state) => {
       state.series[0]!.bestOf = 5;
@@ -655,15 +901,17 @@ describe("duel map draws", () => {
   }
 
   it("starts every phase and newly created MD1 without a map", () => {
-    expect(createInitialState().series.every((series) => series.map === null))
-      .toBe(true);
+    expect(
+      createInitialState().series.every((series) => series.map === null),
+    ).toBe(true);
     const state = addTiebreak(
       league(["a", "a", "a", "a", "b", "a"]),
       "isinha",
       "alice",
     );
-    expect(state.series.find((series) => series.phase === "tiebreak")!.map)
-      .toBeNull();
+    expect(
+      state.series.find((series) => series.phase === "tiebreak")!.map,
+    ).toBeNull();
   });
 
   it("can draw all five maps and permits independent repetitions", () => {
@@ -729,14 +977,16 @@ describe("duel map draws", () => {
     expect(state.series.find((series) => series.id === "boss")).toMatchObject({
       map: "D",
       playerA: "isinha",
-      playerB: "zacarias",
+      playerB: "tapioca",
     });
     state = sweep(state, "boss", "b");
     const corrected = removeGameResult(state, "league-1", 0, true);
-    expect(corrected.series.find((series) => series.id === "final"))
-      .toMatchObject({ map: "C", playerA: null, playerB: null, games: [] });
-    expect(corrected.series.find((series) => series.id === "boss"))
-      .toMatchObject({ map: "D", playerA: null, playerB: null, games: [] });
+    expect(
+      corrected.series.find((series) => series.id === "final"),
+    ).toMatchObject({ map: "C", playerA: null, playerB: null, games: [] });
+    expect(
+      corrected.series.find((series) => series.id === "boss"),
+    ).toMatchObject({ map: "D", playerA: null, playerB: null, games: [] });
   });
 
   it("draws and persists the one map used for an MD1", () => {
@@ -748,8 +998,10 @@ describe("duel map draws", () => {
     );
     const id = state.series.find((series) => series.phase === "tiebreak")!.id;
     state = sweep(drawSeriesMap(state, id), id, "a");
-    expect(state.series.find((series) => series.id === id))
-      .toMatchObject({ map: "E", bestOf: 1 });
+    expect(state.series.find((series) => series.id === id)).toMatchObject({
+      map: "E",
+      bestOf: 1,
+    });
     expect(validateState(JSON.parse(JSON.stringify(state)))).toEqual(state);
   });
 
@@ -789,5 +1041,180 @@ describe("duel map draws", () => {
       };
       expect(() => validateState(invalid)).toThrow(/Mapa de duelo inválido/);
     }
+  });
+});
+
+describe("Tapioca MD1 boss and legacy migration", () => {
+  it("migrates the exact version-49 Musashi snapshot while preserving every league/final result, map, and active match", () => {
+    const original = JSON.stringify(legacyProductionSnapshot);
+    const originalFinal = legacyProductionSnapshot.series.find(
+      (series) => series.id === "final",
+    )!;
+    const originalBoss = legacyProductionSnapshot.series.find(
+      (series) => series.id === "boss",
+    )!;
+    expect(originalFinal.games).toHaveLength(5);
+    expect(originalBoss).toMatchObject({
+      playerA: "musashi",
+      playerB: "zacarias",
+      bestOf: 3,
+      games: [],
+      map: "A",
+    });
+
+    const migrated = validateState(legacyProductionSnapshot);
+    expect(migrated).toEqual({
+      ...legacyProductionSnapshot,
+      participants: legacyProductionSnapshot.participants.map((participant) =>
+        participant.id === "zacarias"
+          ? { ...participant, id: "tapioca", name: "Tapioca", avatar: null }
+          : participant,
+      ),
+      series: legacyProductionSnapshot.series.map((series) =>
+        series.id === "boss"
+          ? { ...series, playerB: "tapioca", bestOf: 1 }
+          : series,
+      ),
+    });
+    expect(migrated.series.filter((series) => series.phase !== "boss")).toEqual(
+      legacyProductionSnapshot.series.filter(
+        (series) => series.phase !== "boss",
+      ),
+    );
+    expect(migrated.activeSeriesId).toBe("boss");
+    expect(getProgress(migrated)).toMatchObject({
+      phase: "boss",
+      championId: "musashi",
+      bossWinnerId: null,
+    });
+    expect(validateState(JSON.parse(JSON.stringify(migrated)))).toEqual(
+      migrated,
+    );
+    expect(JSON.stringify(legacyProductionSnapshot)).toBe(original);
+  });
+
+  it("derives a different champion from the final instead of forcing the live champion in the seed", () => {
+    const initial = createInitialState();
+    expect(initial.participants.map((participant) => participant.id)).toEqual([
+      "isinha",
+      "alice",
+      "kurtz",
+      "musashi",
+      "tapioca",
+    ]);
+    expect(initial.series.find((series) => series.id === "boss")).toMatchObject(
+      { playerA: null, playerB: null, bestOf: 1, games: [] },
+    );
+
+    let state = sweep(league(), "final", "b");
+    expect(getProgress(state).championId).toBe("alice");
+    expect(state.series.find((series) => series.id === "boss")).toMatchObject({
+      playerA: "alice",
+      playerB: "tapioca",
+      bestOf: 1,
+    });
+    state = sweep(state, "boss", "a");
+    expect(
+      state.series.find((series) => series.id === "boss")!.games,
+    ).toHaveLength(1);
+    expect(getProgress(state)).toMatchObject({
+      phase: "finished",
+      championId: "alice",
+      bossWinnerId: "alice",
+    });
+    expect(() =>
+      applyGameResult(state, "boss", 1, {
+        scoreA: 10,
+        scoreB: 0,
+        reason: "normal",
+      }),
+    ).toThrow();
+    expect(validateState(JSON.parse(JSON.stringify(state)))).toEqual(state);
+  });
+
+  it("finishes the migrated live challenge after a single game without changing the five-game final", () => {
+    const migrated = validateState(legacyProductionSnapshot);
+    const finished = applyGameResult(migrated, "boss", 0, {
+      scoreA: 3,
+      scoreB: 10,
+      reason: "normal",
+    });
+    expect(getProgress(finished)).toMatchObject({
+      phase: "finished",
+      championId: "musashi",
+      bossWinnerId: "tapioca",
+    });
+    expect(finished.series.find((series) => series.id === "final")).toEqual(
+      legacyProductionSnapshot.series.find((series) => series.id === "final"),
+    );
+    expect(
+      finished.series.find((series) => series.id === "boss"),
+    ).toMatchObject({
+      bestOf: 1,
+      map: "A",
+      games: [{ scoreA: 3, scoreB: 10, reason: "normal", winnerId: "tapioca" }],
+    });
+    expect(validateState(JSON.parse(JSON.stringify(finished)))).toEqual(
+      finished,
+    );
+  });
+
+  it("also migrates an unplayed legacy seed without creating a champion or changing the active league match", () => {
+    const initial = createInitialState();
+    const legacy = {
+      ...initial,
+      participants: initial.participants.map((participant) =>
+        participant.id === "tapioca"
+          ? { ...participant, id: "zacarias", name: "Zacarias" }
+          : participant,
+      ),
+      series: initial.series.map((series) =>
+        series.id === "boss" ? { ...series, bestOf: 3 } : series,
+      ),
+    };
+    expect(validateState(legacy)).toEqual(initial);
+    expect(getProgress(validateState(legacy))).toMatchObject({
+      phase: "league",
+      championId: null,
+    });
+  });
+
+  it.each(["musashi", "zacarias"])(
+    "refuses to reassign any legacy boss game won by %s to a different opponent",
+    (winnerId) => {
+      const legacy = JSON.parse(JSON.stringify(legacyProductionSnapshot));
+      const boss = legacy.series.find(
+        (series: { id: string }) => series.id === "boss",
+      );
+      boss.games = [
+        {
+          scoreA: winnerId === "musashi" ? 10 : 3,
+          scoreB: winnerId === "zacarias" ? 10 : 3,
+          reason: "normal",
+          winnerId,
+        },
+      ];
+      const before = JSON.stringify(legacy);
+      expect(() => validateState(legacy)).toThrow(
+        /Zacarias já tem partidas registradas.*não pode ser atribuído a Tapioca/,
+      );
+      expect(JSON.stringify(legacy)).toBe(before);
+    },
+  );
+
+  it("rejects mixed legacy/current boss formats instead of silently changing their rule", () => {
+    const current = createInitialState();
+    current.series.find((series) => series.id === "boss")!.bestOf = 3;
+    expect(() => validateState(current)).toThrow(
+      /Formato da final ou do chefão inválido/,
+    );
+
+    const legacy = JSON.parse(JSON.stringify(legacyProductionSnapshot));
+    legacy.series.find(
+      (series: { id: string }) => series.id === "boss",
+    ).bestOf = 1;
+    expect(() => validateState(legacy)).toThrow(
+      /Formato legado do chefão inválido/,
+    );
   });
 });
