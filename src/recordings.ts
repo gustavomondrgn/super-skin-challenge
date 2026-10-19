@@ -16,4 +16,31 @@ export const EVENT_RECORDINGS: readonly EventRecording[] = [
     title: "isinha × Alice — BO3",
     durationSeconds: 644.5,
   },
+  {
+    seriesId: "league-3",
+    youtubeId: "uRmxGVmrvI0",
+    title: "isinha × Kurtz — BO3",
+    durationSeconds: 636,
+  },
+  {
+    seriesId: "league-4",
+    youtubeId: "ez4jo8fm00U",
+    title: "Alice × Musashi — BO3",
+    durationSeconds: 554.1,
+    notes: "O último round do jogo 1 não foi capturado na gravação original.",
+  },
+  {
+    seriesId: "league-5",
+    youtubeId: "gm00e7iYi7o",
+    title: "isinha × Musashi — BO3",
+    durationSeconds: 927.3,
+    notes:
+      "Dois rounds do jogo 2 não foram capturados na gravação original. O vídeo retoma com o placar atualizado.",
+  },
+  {
+    seriesId: "league-6",
+    youtubeId: "El3XrmKNXmg",
+    title: "Alice × Kurtz — BO3",
+    durationSeconds: 686.3,
+  },
 ];
