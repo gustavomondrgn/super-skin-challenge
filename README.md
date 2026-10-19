@@ -24,6 +24,10 @@ As gravações ficam na seção **Cada duelo, guardado**, ao final da página, t
 
 O catálogo é definido em [src/recordings.ts](./src/recordings.ts): `seriesId` associa o vídeo ao confronto, `youtubeId` recebe apenas o ID de 11 caracteres do YouTube, `durationSeconds` informa a duração e `notes` permite explicar lacunas da gravação original. Use IDs de vídeos já publicados, com incorporação permitida. Um catálogo vazio mantém a seção oculta. Alterar o catálogo exige novo deploy; os resultados continuam vindo do Supabase.
 
+Logo abaixo, **Os momentos que ficaram** reúne os clipes em `/#melhores-momentos`, com filtros por participante, miniaturas e download em MP4. Os vídeos têm até 20 segundos e menos de 18 MB. Apenas o clipe iniciado pelo visitante carrega no player; os demais mostram a miniatura. A lista começa com 12 clipes e **Ver mais clipes** revela os seguintes.
+
+O catálogo de clipes fica em [src/highlights.ts](./src/highlights.ts). Os arquivos estão no bucket público `event-highlights` do Supabase Storage, com limite de 20 MB por objeto e tipos `video/mp4` e `image/jpeg`. A leitura é pública; uploads e exclusões continuam restritos ao painel do Supabase. `participantIds` identifica de quem é o momento; conversas sem autor confirmado ficam como **Resenha da turma**. `downloadUrl` usa a opção de download do Storage para salvar o arquivo mesmo em outro domínio. Não é necessário alterar o SQL do torneio para acessar os clipes.
+
 São **8 confrontos no evento inteiro**, sem contar desempates: 6 na primeira fase, a final e o desafio. Isso representa de **16 a 24 partidas**, então o formato não garante duração inferior a uma hora. O tempo depende da duração de cada partida e dos intervalos.
 
 ## 1. Preparar o Supabase

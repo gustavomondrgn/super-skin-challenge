@@ -1,0 +1,236 @@
+{
+  "h1-provocation": {
+    "durationSeconds": 14.0,
+    "sizeBytes": 10445800,
+    "videoFile": "h1-provocation.mp4",
+    "posterFile": "h1-provocation.jpg"
+  },
+  "h1-knife": {
+    "durationSeconds": 13.2,
+    "sizeBytes": 10049973,
+    "videoFile": "h1-knife.mp4",
+    "posterFile": "h1-knife.jpg"
+  },
+  "h1-rat": {
+    "durationSeconds": 17.0,
+    "sizeBytes": 12719091,
+    "videoFile": "h1-rat.mp4",
+    "posterFile": "h1-rat.jpg"
+  },
+  "h1-sheriff-aura": {
+    "durationSeconds": 11.0,
+    "sizeBytes": 8155964,
+    "videoFile": "h1-sheriff-aura.mp4",
+    "posterFile": "h1-sheriff-aura.jpg"
+  },
+  "h1-clean-vandal": {
+    "durationSeconds": 10.0,
+    "sizeBytes": 7791089,
+    "videoFile": "h1-clean-vandal.mp4",
+    "posterFile": "h1-clean-vandal.jpg"
+  },
+  "h1-what-a-flick": {
+    "durationSeconds": 10.5,
+    "sizeBytes": 8007365,
+    "videoFile": "h1-what-a-flick.mp4",
+    "posterFile": "h1-what-a-flick.jpg"
+  },
+  "h1-roast": {
+    "durationSeconds": 14.5,
+    "sizeBytes": 9382899,
+    "videoFile": "h1-roast.mp4",
+    "posterFile": "h1-roast.jpg"
+  },
+  "h1-grass": {
+    "durationSeconds": 18.5,
+    "sizeBytes": 13958063,
+    "videoFile": "h1-grass.mp4",
+    "posterFile": "h1-grass.jpg"
+  },
+  "h1-headset": {
+    "durationSeconds": 16.2,
+    "sizeBytes": 3637557,
+    "videoFile": "h1-headset.mp4",
+    "posterFile": "h1-headset.jpg"
+  },
+  "h1-mind-headshot": {
+    "durationSeconds": 20.0,
+    "sizeBytes": 15018359,
+    "videoFile": "h1-mind-headshot.mp4",
+    "posterFile": "h1-mind-headshot.jpg"
+  },
+  "h1-sheriff-equip": {
+    "durationSeconds": 10.5,
+    "sizeBytes": 8218829,
+    "videoFile": "h1-sheriff-equip.mp4",
+    "posterFile": "h1-sheriff-equip.jpg"
+  },
+  "h2-knife-decider": {
+    "durationSeconds": 13.5,
+    "sizeBytes": 9674528,
+    "videoFile": "h2-knife-decider.mp4",
+    "posterFile": "h2-knife-decider.jpg"
+  },
+  "h2-culposa": {
+    "durationSeconds": 15.0,
+    "sizeBytes": 11165649,
+    "videoFile": "h2-culposa.mp4",
+    "posterFile": "h2-culposa.jpg"
+  },
+  "h2-alice-flick": {
+    "durationSeconds": 12.0,
+    "sizeBytes": 9031321,
+    "videoFile": "h2-alice-flick.mp4",
+    "posterFile": "h2-alice-flick.jpg"
+  },
+  "h2-brutal": {
+    "durationSeconds": 12.0,
+    "sizeBytes": 9158147,
+    "videoFile": "h2-brutal.mp4",
+    "posterFile": "h2-brutal.jpg"
+  },
+  "h2-maquina": {
+    "durationSeconds": 10.5,
+    "sizeBytes": 7771858,
+    "videoFile": "h2-maquina.mp4",
+    "posterFile": "h2-maquina.jpg"
+  },
+  "h2-interview-wording": {
+    "durationSeconds": 12.1,
+    "sizeBytes": 1454535,
+    "videoFile": "h2-interview-wording.mp4",
+    "posterFile": "h2-interview-wording.jpg"
+  },
+  "h2-6x9": {
+    "durationSeconds": 14.2,
+    "sizeBytes": 10898094,
+    "videoFile": "h2-6x9.mp4",
+    "posterFile": "h2-6x9.jpg"
+  },
+  "h2-draw-weapon": {
+    "durationSeconds": 14.0,
+    "sizeBytes": 10494249,
+    "videoFile": "h2-draw-weapon.mp4",
+    "posterFile": "h2-draw-weapon.jpg"
+  },
+  "hour3-01": {
+    "durationSeconds": 12.0,
+    "sizeBytes": 8900565,
+    "videoFile": "hour3-01.mp4",
+    "posterFile": "hour3-01.jpg"
+  },
+  "hour3-02": {
+    "durationSeconds": 13.0,
+    "sizeBytes": 7139634,
+    "videoFile": "hour3-02.mp4",
+    "posterFile": "hour3-02.jpg"
+  },
+  "hour3-03": {
+    "durationSeconds": 11.0,
+    "sizeBytes": 8470439,
+    "videoFile": "hour3-03.mp4",
+    "posterFile": "hour3-03.jpg"
+  },
+  "hour3-04": {
+    "durationSeconds": 17.0,
+    "sizeBytes": 12748468,
+    "videoFile": "hour3-04.mp4",
+    "posterFile": "hour3-04-v2.jpg"
+  },
+  "hour3-05": {
+    "durationSeconds": 10.0,
+    "sizeBytes": 7584376,
+    "videoFile": "hour3-05.mp4",
+    "posterFile": "hour3-05.jpg"
+  },
+  "hour3-06": {
+    "durationSeconds": 12.0,
+    "sizeBytes": 8050286,
+    "videoFile": "hour3-06.mp4",
+    "posterFile": "hour3-06.jpg"
+  },
+  "hour3-07": {
+    "durationSeconds": 17.0,
+    "sizeBytes": 9366633,
+    "videoFile": "hour3-07.mp4",
+    "posterFile": "hour3-07-v2.jpg"
+  },
+  "hour3-08": {
+    "durationSeconds": 12.0,
+    "sizeBytes": 9143153,
+    "videoFile": "hour3-08.mp4",
+    "posterFile": "hour3-08.jpg"
+  },
+  "hour3-09": {
+    "durationSeconds": 14.0,
+    "sizeBytes": 10589496,
+    "videoFile": "hour3-09.mp4",
+    "posterFile": "hour3-09.jpg"
+  },
+  "hour3-10": {
+    "durationSeconds": 15.0,
+    "sizeBytes": 11245801,
+    "videoFile": "hour3-10.mp4",
+    "posterFile": "hour3-10.jpg"
+  },
+  "hour3-11": {
+    "durationSeconds": 19.0,
+    "sizeBytes": 13975690,
+    "videoFile": "hour3-11.mp4",
+    "posterFile": "hour3-11.jpg"
+  },
+  "hour3-12": {
+    "durationSeconds": 12.0,
+    "sizeBytes": 8761224,
+    "videoFile": "hour3-12.mp4",
+    "posterFile": "hour3-12.jpg"
+  },
+  "hour3-13": {
+    "durationSeconds": 13.0,
+    "sizeBytes": 8189023,
+    "videoFile": "hour3-13.mp4",
+    "posterFile": "hour3-13.jpg"
+  },
+  "hour3-14": {
+    "durationSeconds": 11.0,
+    "sizeBytes": 8194190,
+    "videoFile": "hour3-14.mp4",
+    "posterFile": "hour3-14.jpg"
+  },
+  "hour3-15": {
+    "durationSeconds": 13.0,
+    "sizeBytes": 9318609,
+    "videoFile": "hour3-15.mp4",
+    "posterFile": "hour3-15.jpg"
+  },
+  "hour3-16": {
+    "durationSeconds": 20.0,
+    "sizeBytes": 15501123,
+    "videoFile": "hour3-16.mp4",
+    "posterFile": "hour3-16-v2.jpg"
+  },
+  "hour3-17": {
+    "durationSeconds": 12.0,
+    "sizeBytes": 8850127,
+    "videoFile": "hour3-17.mp4",
+    "posterFile": "hour3-17.jpg"
+  },
+  "hour3-18": {
+    "durationSeconds": 11.0,
+    "sizeBytes": 8022030,
+    "videoFile": "hour3-18.mp4",
+    "posterFile": "hour3-18.jpg"
+  },
+  "hour3-19": {
+    "durationSeconds": 11.0,
+    "sizeBytes": 8307842,
+    "videoFile": "hour3-19.mp4",
+    "posterFile": "hour3-19.jpg"
+  },
+  "hour3-20": {
+    "durationSeconds": 13.0,
+    "sizeBytes": 8209815,
+    "videoFile": "hour3-20.mp4",
+    "posterFile": "hour3-20.jpg"
+  }
+}

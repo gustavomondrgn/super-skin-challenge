@@ -9,6 +9,7 @@ import WinnerCelebration, {
   type WinnerCelebrationHandle,
 } from "./WinnerCelebration";
 import EventRecordings from "./EventRecordings";
+import EventHighlights from "./EventHighlights";
 import { getProgress, getSeriesResult, getStandings } from "./domain";
 import type { Participant, Series, TournamentState } from "./domain";
 
@@ -1052,6 +1053,7 @@ export default function PublicPage({
             </details>
           </section>
           <EventRecordings state={state} />
+          <EventHighlights />
         </div>
       </main>
       <footer className="site-footer">
