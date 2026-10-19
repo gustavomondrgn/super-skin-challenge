@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import WinnerCelebration from "./WinnerCelebration";
+import EventRecordings from "./EventRecordings";
 import { getProgress, getSeriesResult, getStandings } from "./domain";
 import type { Participant, Series, TournamentState } from "./domain";
 
@@ -1031,6 +1032,7 @@ export default function PublicPage({
               </div>
             </details>
           </section>
+          <EventRecordings state={state} />
         </div>
       </main>
       <footer className="site-footer">

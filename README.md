@@ -20,7 +20,9 @@ Ao concluir os seis confrontos e resolver os empates em MD1, o site preenche aut
 
 Ao encerrar a terceira fase, a página pública abre uma celebração com o campeão e confetes. Se o campeão venceu Tapioca, mostra o **pacote completo Champions 2026**; se perdeu, mostra a **Phantom Champions 2026 garantida**. Feche pelo botão **×**, pela tecla **Esc** ou por **Ver histórico do evento** para consultar a tabela e os placares das três fases. O botão **Rever celebração** permite abrir a tela novamente. A animação respeita a preferência de movimento reduzido do dispositivo.
 
-A gravação do evento será adicionada futuramente. Esta versão não inclui upload ou armazenamento de vídeo.
+As gravações ficam na seção **Cada duelo, guardado**, ao final da página, também acessível por `/#gravacoes`. Cada série tem um vídeo: os seis confrontos da primeira fase, a Grande Final em MD5 e o desafio de Musashi contra Tapioca em MD1. Os vídeos ficam no YouTube como **não listados** e o player só carrega quando o visitante escolhe assistir.
+
+O catálogo é definido em [src/recordings.ts](./src/recordings.ts): `seriesId` associa o vídeo ao confronto, `youtubeId` recebe apenas o ID de 11 caracteres do YouTube, `durationSeconds` informa a duração e `notes` permite explicar lacunas da gravação original. Use IDs de vídeos já publicados, com incorporação permitida. Um catálogo vazio mantém a seção oculta. Alterar o catálogo exige novo deploy; os resultados continuam vindo do Supabase.
 
 São **8 confrontos no evento inteiro**, sem contar desempates: 6 na primeira fase, a final e o desafio. Isso representa de **16 a 24 partidas**, então o formato não garante duração inferior a uma hora. O tempo depende da duração de cada partida e dos intervalos.
 
@@ -131,6 +133,6 @@ npx playwright install webkit
 npm run test:e2e
 ```
 
-O Playwright inicia o site local na porta `5190` e executa os cenários no **Chrome desktop** e no **WebKit com perfil de iPhone 13**. Os testes cobrem login, registro e correção de placares, avanço até o encerramento, atualização entre visitantes e organizador, falhas de conexão, concorrência entre versões, sorteio, uso em telas pequenas e acessibilidade.
+O Playwright inicia o site local na porta `5190` e executa os cenários no **Chrome desktop** e no **WebKit com perfil de iPhone 13**. Os testes cobrem login, registro e correção de placares, avanço até o encerramento, atualização entre visitantes e organizador, falhas de conexão, concorrência entre versões, sorteio, uso em telas pequenas e acessibilidade. Os cenários de gravações conferem troca de vídeo, navegação por teclado e toque, notas, atualização dos placares, ausência de requisições ao YouTube antes do clique e layout em 320 e 390 px.
 
 Autenticação, banco e Realtime usam respostas simuladas em memória de [e2e/mock-supabase.ts](./e2e/mock-supabase.ts). A suíte usa URL e chave fictícias; não precisa de banco ou credenciais reais e não altera o evento publicado. O relatório fica em `playwright-report/`, com capturas e traces das falhas.

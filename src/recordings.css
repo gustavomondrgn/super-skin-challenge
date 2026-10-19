@@ -1,0 +1,558 @@
+.recordings-section {
+  padding-top: 62px;
+}
+
+.recordings-viewer {
+  display: grid;
+  grid-template-columns: minmax(0, 1.85fr) minmax(245px, 1fr);
+  border: 1px solid var(--border);
+  background: var(--panel);
+  scroll-margin-top: 28px;
+}
+
+.recordings-viewer:focus {
+  outline: none;
+}
+
+.recordings-screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 200px;
+  min-width: 0;
+  align-self: start;
+  background: #080b0f;
+}
+
+.recordings-screen iframe {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.recordings-poster {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 28px;
+  text-align: left;
+  border: 0;
+  color: var(--text);
+  background:
+    linear-gradient(125deg, #ff46550a, transparent 55%),
+    radial-gradient(ellipse at 85% 85%, #c7ad7610, transparent 65%),
+    repeating-linear-gradient(135deg, #ffffff02 0 1px, transparent 1px 42px),
+    #0e1218;
+}
+
+.recordings-poster__edition,
+.recordings-poster__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.recordings-poster__edition {
+  color: #acb2bf;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.7px;
+}
+
+.recordings-poster__edition > span {
+  color: var(--gold);
+  font-family: var(--heading);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.recordings-poster__duel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 25px;
+  width: min(100%, 460px);
+  margin-inline: auto;
+}
+
+.recordings-poster__duel > span:not(.recordings-play) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.recordings-poster__duel .avatar {
+  width: clamp(54px, 6.4vw, 84px);
+  height: clamp(54px, 6.4vw, 84px);
+  border-color: #c7ad7670;
+}
+
+.recordings-poster__duel strong {
+  font-family: var(--heading);
+  font-size: clamp(23px, 2.8vw, 36px);
+  font-weight: 600;
+}
+
+.recordings-play {
+  display: grid;
+  place-items: center;
+  width: 70px;
+  height: 70px;
+  border: 1px solid #ff647299;
+  border-radius: 50%;
+  background: #dc2d3e;
+  color: white;
+  box-shadow: 0 0 0 10px #ff46550a;
+  transition:
+    background 150ms ease,
+    transform 150ms ease;
+}
+
+.recordings-play svg {
+  margin-left: 2px;
+}
+
+.recordings-poster:hover .recordings-play {
+  background: #ed3447;
+  transform: scale(1.05);
+}
+
+.recordings-poster__bottom {
+  color: #d4d7df;
+  font-size: 12px;
+}
+
+.recordings-poster__bottom > time {
+  font-variant-numeric: tabular-nums;
+  padding: 4px 7px;
+  border: 1px solid #ffffff1c;
+  background: #0d1015a6;
+}
+
+.recordings-current {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 30px;
+  min-width: 0;
+  border-left: 1px solid var(--border);
+}
+
+.recordings-current > .eyebrow {
+  color: var(--gold);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+}
+
+.recordings-current__phase {
+  margin-top: 18px;
+  color: #b8becb;
+  font-size: 12px;
+}
+
+.recordings-current__phase > span {
+  margin-left: 4px;
+  color: var(--muted);
+}
+
+.recordings-current h3 {
+  margin-top: 8px;
+  font: 600 clamp(28px, 3vw, 41px) / 1.05 var(--heading);
+  letter-spacing: -0.3px;
+  overflow-wrap: anywhere;
+}
+
+.recordings-current__score {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 18px;
+}
+
+.recordings-current__score > strong {
+  font-family: var(--heading);
+  font-size: 35px;
+  font-weight: 600;
+  line-height: 1;
+  color: #e1c48b;
+}
+
+.recordings-current__score > span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.recordings-rounds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.recordings-rounds > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 7px;
+  border: 1px solid var(--border);
+  color: #c2c9d6;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.recordings-rounds small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.recordings-external {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  width: fit-content;
+  margin-top: 22px;
+  color: #c6ccd7;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  transition: color 150ms ease;
+}
+
+.recordings-note {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-left: 2px solid #c7ad7666;
+  background: #c7ad7608;
+  color: #c9bc9e;
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.recordings-external:hover {
+  color: white;
+}
+
+.recordings-groups {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.recordings-group__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.recordings-group__heading > h3 {
+  font: 500 25px / 1 var(--heading);
+}
+
+.recordings-group__heading > span {
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  color: var(--muted);
+}
+
+.recordings-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.recordings-group--decisions .recordings-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.recording-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0 20px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  text-align: left;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease;
+}
+
+.recording-card:hover {
+  border-color: #6b7585;
+  background: #191e27;
+}
+
+.recording-card.is-selected {
+  border-color: #e35564;
+  background: linear-gradient(125deg, #ff46550a, transparent 80%), var(--panel);
+  box-shadow: inset 2px 0 var(--red);
+}
+
+.recording-card--decision:not(.is-selected) {
+  border-color: #c7ad7650;
+}
+
+.recording-card__top,
+.recording-card__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 11px;
+  color: #a9b1bf;
+}
+
+.recording-card__top {
+  padding: 17px 0;
+  border-bottom: 1px solid #ffffff0b;
+}
+
+.recording-card__top > span:first-child {
+  color: #d1d6df;
+}
+
+.recording-card--decision .recording-card__top > span:first-child {
+  color: #dfc38b;
+}
+
+.recording-matchup {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 0;
+}
+
+.recording-matchup__player {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #b4bdcb;
+  font-size: 14px;
+  min-width: 0;
+}
+
+.recording-matchup__player .avatar {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+.recording-matchup__player > span:nth-child(2) {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.recording-matchup__player > strong {
+  margin-left: auto;
+  font: 500 28px / 1 var(--heading);
+}
+
+.recording-matchup__player.is-winner {
+  color: #eee9dd;
+}
+
+.recording-matchup__player.is-winner > strong {
+  color: #dfc38b;
+}
+
+.recording-card__bottom {
+  min-height: 48px;
+  border-top: 1px solid #ffffff0b;
+}
+
+.recording-card__bottom > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recording-card.is-selected .recording-card__bottom > span:first-child {
+  color: #ff8e9b;
+}
+
+.recording-card__bottom > span:last-child {
+  font-size: 10px;
+  color: #a1aab9;
+}
+
+@media (max-width: 1000px) {
+  .recordings-viewer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .recordings-current {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+    padding: 22px;
+  }
+
+  .recordings-current__phase {
+    margin-top: 10px;
+  }
+
+  .recordings-current h3 {
+    font-size: 34px;
+  }
+
+  .recordings-current__score {
+    margin-top: 12px;
+  }
+
+  .recordings-external {
+    margin-top: 15px;
+  }
+
+  .recordings-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .recordings-poster__duel .avatar {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 600px) {
+  .recordings-section {
+    padding-top: 40px;
+  }
+
+  .recordings-section .section-heading h2 {
+    font-size: clamp(29px, 8vw, 36px);
+  }
+
+  .recordings-poster {
+    padding: 15px 17px;
+  }
+
+  .recordings-poster__edition {
+    font-size: 9px;
+    letter-spacing: 0.7px;
+  }
+
+  .recordings-poster__edition > span {
+    font-size: 19px;
+  }
+
+  .recordings-poster__duel {
+    gap: 15px;
+    width: 100%;
+  }
+
+  .recordings-poster__duel > span:not(.recordings-play) {
+    gap: 7px;
+  }
+
+  .recordings-poster__duel .avatar {
+    width: clamp(36px, 12vw, 60px);
+    height: clamp(36px, 12vw, 60px);
+  }
+
+  .recordings-poster__duel strong {
+    font-size: 23px;
+    line-height: 1;
+  }
+
+  .recordings-play {
+    width: 49px;
+    height: 49px;
+    box-shadow: 0 0 0 6px #ff46550a;
+  }
+
+  .recordings-play svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .recordings-poster__bottom {
+    font-size: 12px;
+  }
+
+  .recordings-poster__bottom > time {
+    padding: 3px 5px;
+  }
+
+  .recordings-current {
+    padding: 22px 18px;
+  }
+
+  .recordings-current > .eyebrow {
+    font-size: 10px;
+    letter-spacing: 1.1px;
+  }
+
+  .recordings-current__phase,
+  .recordings-current__score > span,
+  .recordings-external {
+    font-size: 12px;
+  }
+
+  .recordings-current h3 {
+    font-size: 32px;
+  }
+
+  .recordings-group__heading {
+    gap: 10px;
+  }
+
+  .recordings-group__heading > h3 {
+    font-size: 25px;
+  }
+
+  .recordings-group__heading > span {
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  .recordings-grid,
+  .recordings-group--decisions .recordings-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .recording-card {
+    padding-inline: 18px;
+  }
+
+  .recording-card__top,
+  .recording-card__bottom,
+  .recording-card__bottom > span:last-child {
+    font-size: 12px;
+  }
+
+  .recording-matchup {
+    gap: 13px;
+    padding-block: 18px;
+  }
+
+  .recording-matchup__player .avatar {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recordings-play,
+  .recording-card,
+  .recordings-external {
+    transition: none;
+  }
+}
