@@ -1458,9 +1458,13 @@ abbr[title] {
 }
 .footer-credits {
   display: flex;
+  flex-wrap: wrap;
   gap: 24px;
 }
 .footer-credits > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-size: 8px;
   color: #727e90;
   line-height: 1.8;

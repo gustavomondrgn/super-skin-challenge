@@ -109,11 +109,16 @@ export function Icon({ name, size = 20 }: { name: string; size?: number }) {
 export function Avatar({
   participant,
   size = "small",
+  loading,
 }: {
   participant?: Participant | null;
   size?: "small" | "large";
+  loading?: "eager" | "lazy";
 }) {
   const initials = participant?.name.slice(0, 2).toUpperCase() ?? "?";
+  const avatar =
+    participant?.avatar ??
+    (participant?.id === "tapioca" ? "/avatars/tapioca.png" : null);
   return (
     <span
       className={`avatar avatar--${size}`}
@@ -122,10 +127,11 @@ export function Avatar({
       }
     >
       <span>{initials}</span>
-      {participant?.avatar && (
+      {avatar && (
         <img
-          src={participant.avatar}
+          src={avatar}
           alt=""
+          loading={loading}
           onError={(event) => {
             event.currentTarget.style.display = "none";
           }}
@@ -1056,10 +1062,32 @@ export default function PublicPage({
           <p>Feito de amigos. Jogado como uma final.</p>
           <div className="footer-credits">
             <span>
-              Organização <strong>Zacarias</strong>
+              <span aria-hidden="true">
+                <Avatar
+                  participant={{
+                    id: "zakkaryz",
+                    name: "Zacarias",
+                    avatar: "/avatars/zakkaryz.png",
+                    accent: "#c7ad76",
+                  }}
+                  loading="lazy"
+                />
+              </span>
+              <span>Organização <strong>Zacarias</strong></span>
             </span>
             <span>
-              Co-owner <strong>Tapioca</strong>
+              <span aria-hidden="true">
+                <Avatar
+                  participant={{
+                    id: "tapioca",
+                    name: "Tapioca",
+                    avatar: null,
+                    accent: "#d6b478",
+                  }}
+                  loading="lazy"
+                />
+              </span>
+              <span>Co-owner <strong>Tapioca</strong></span>
             </span>
           </div>
         </div>
