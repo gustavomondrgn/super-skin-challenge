@@ -94,7 +94,7 @@ test("recording archive stays absent when no published videos are configured", a
   expect(backend.faults).toEqual([]);
 });
 
-test("recordings load only after a click and switch one privacy-enhanced player using real event results", async ({
+test("recordings show a cover on selection and load only after explicit play using real event results", async ({
   page,
   context,
 }, testInfo) => {
@@ -148,13 +148,14 @@ test("recordings load only after a click and switch one privacy-enhanced player 
   const boss = page.getByRole("button", {
     name: /Chefão final.*musashi.*Tapioca/,
   });
+  const requestsBeforeBossSelection = requests.length;
   await boss.scrollIntoViewIfNeeded();
   if (testInfo.project.use.hasTouch) await boss.tap();
   else await boss.click();
-  await expect(player).toHaveCount(1);
-  await expect(player).toHaveAttribute(
-    "src",
-    /youtube-nocookie\.com\/embed\/sscVideo008\?/,
+  await expect(player).toHaveCount(0);
+  await expect(page.locator(".recordings-poster")).toBeVisible();
+  await expect(page.locator(".recordings-poster")).toContainText(
+    "musashi × Tapioca",
   );
   await expect(page.locator(".recordings-current h3")).toHaveText(
     "musashi × Tapioca",
@@ -173,6 +174,29 @@ test("recordings load only after a click and switch one privacy-enhanced player 
   await expect(page.locator(".recording-card[aria-pressed=true]")).toHaveCount(
     1,
   );
+  expect(requests).toHaveLength(requestsBeforeBossSelection);
+
+  await page.locator(".recordings-poster").click();
+  await expect(player).toHaveCount(1);
+  await expect(player).toHaveAttribute(
+    "src",
+    /youtube-nocookie\.com\/embed\/sscVideo008\?autoplay=1&/,
+  );
+  await expect(
+    page
+      .frameLocator(".recordings-screen iframe")
+      .getByText("Player de teste YouTube", { exact: true }),
+  ).toBeVisible();
+
+  const requestsBeforeReselection = requests.length;
+  await boss.scrollIntoViewIfNeeded();
+  if (testInfo.project.use.hasTouch) await boss.tap();
+  else await boss.click();
+  await expect(player).toHaveCount(0);
+  await expect(page.locator(".recordings-poster")).toBeVisible();
+  expect(requests).toHaveLength(requestsBeforeReselection);
+  await page.locator(".recordings-poster").click();
+  await expect(player).toHaveCount(1);
   await expect(
     page
       .frameLocator(".recordings-screen iframe")
@@ -199,13 +223,22 @@ test("recordings load only after a click and switch one privacy-enhanced player 
   const final = page.getByRole("button", {
     name: /Grande final.*Musashi atualizado.*kurtz/,
   });
+  const requestsBeforeFinalSelection = requests.length;
   await final.focus();
   await final.press("Enter");
-  await expect(player).toHaveAttribute("src", /sscVideo007\?/);
+  await expect(player).toHaveCount(0);
+  await expect(page.locator(".recordings-poster")).toBeVisible();
+  await expect(page.locator(".recordings-poster")).toContainText(
+    "Musashi atualizado × kurtz",
+  );
   await expect(page.locator(".recordings-note")).toHaveCount(0);
   await expect(page.locator(".recordings-current__score strong")).toHaveText(
     "3 × 0",
   );
+  expect(requests).toHaveLength(requestsBeforeFinalSelection);
+  await page.locator(".recordings-poster").focus();
+  await page.locator(".recordings-poster").press("Enter");
+  await expect(player).toHaveAttribute("src", /sscVideo007\?autoplay=1&/);
   expect(backend.writes).toBe(0);
   expect(backend.faults).toEqual([]);
   expect(errors).toEqual([]);

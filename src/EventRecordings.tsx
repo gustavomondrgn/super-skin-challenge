@@ -140,21 +140,24 @@ export default function EventRecordings({
   const notes = selected.notes?.trim();
   const playing = playingVideoId === selected.youtubeId;
 
-  function play(recording: AvailableRecording, moveToPlayer = false) {
+  function play(recording: AvailableRecording) {
     setSelectedId(recording.seriesId);
     setPlayingVideoId(recording.youtubeId);
-    if (moveToPlayer) {
-      window.requestAnimationFrame(() => {
-        viewerRef.current?.focus({ preventScroll: true });
-        viewerRef.current?.scrollIntoView({
-          block: "start",
-          behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
-            .matches
-            ? "auto"
-            : "smooth",
-        });
+  }
+
+  function selectRecording(recording: AvailableRecording) {
+    setSelectedId(recording.seriesId);
+    setPlayingVideoId(null);
+    window.requestAnimationFrame(() => {
+      viewerRef.current?.focus({ preventScroll: true });
+      viewerRef.current?.scrollIntoView({
+        block: "start",
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
+          .matches
+          ? "auto"
+          : "smooth",
       });
-    }
+    });
   }
 
   const groups = [
@@ -326,7 +329,7 @@ export default function EventRecordings({
                     className={`recording-card${current ? " is-selected" : ""}${recording.series.phase !== "league" ? " recording-card--decision" : ""}`}
                     type="button"
                     aria-pressed={current}
-                    onClick={() => play(recording, true)}
+                    onClick={() => selectRecording(recording)}
                   >
                     <span className="recording-card__top">
                       <span>{seriesLabel(recording.series)}</span>
@@ -339,9 +342,9 @@ export default function EventRecordings({
                     <span className="recording-card__bottom">
                       <span>
                         <PlayIcon small />
-                        {current && playing
-                          ? "No player"
-                          : "Assistir confronto"}
+                        {current
+                          ? playing ? "No player" : "Selecionado"
+                          : "Ver confronto"}
                       </span>
                       <span>REPLAY</span>
                     </span>
