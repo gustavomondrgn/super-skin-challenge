@@ -194,7 +194,7 @@ export const EVENT_HIGHLIGHTS: readonly EventHighlight[] = [
     description: "Na entrevista de Musashi sobre isinha, uma pausa muda tudo para a turma.",
     participantIds: ["musashi", "isinha"],
     category: "funny",
-    durationSeconds: 12.1,
+    durationSeconds: 44.4,
   }),
   clip({
     id: "h2-6x9",
